@@ -1,0 +1,2145 @@
+/* WeatherSpot: Dashboard */
+
+* {
+  box-sizing: border-box;
+}
+
+:root {
+  --bg: #050b12;
+  --panel: #0b1320;
+  --panel-2: #101b2c;
+  --line: #1f3b57;
+  --text: #d5f3ff;
+  --sub: #7da2b8;
+  --accent: #38f2a5;
+  --accent-2: #33bfff;
+  --warn: #ffd166;
+  --danger: #ff5c7a;
+  --shadow: 0 22px 80px rgba(0, 0, 0, 0.45);
+}
+
+.intro-title-block {
+  text-align: center;
+  opacity: 0;
+  transform: translateY(18px) scale(0.98);
+  animation: titleAppear 1.8s ease forwards;
+}
+
+.intro-title-block p {
+  margin: 0 0 16px;
+  color: var(--accent);
+  letter-spacing: 0.2em;
+  font-weight: 800;
+}
+
+.intro-title-block h1 {
+  margin: 0 0 14px;
+  font-size: clamp(52px, 10vw, 116px);
+}
+
+.intro-title-block span {
+  color: var(--sub);
+}
+
+@keyframes titleAppear {
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes sceneRain {
+  from { transform: translateY(-42px); opacity: 0; }
+  20% { opacity: 1; }
+  to { transform: translateY(190px); opacity: 0.1; }
+}
+
+@keyframes sceneSnow {
+  from { transform: translateY(-28px); opacity: 0; }
+  16% { opacity: 1; }
+  to { transform: translateY(170px); opacity: 0.25; }
+}
+
+@keyframes pixelPulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.12); }
+}
+
+@keyframes cloudSlideA {
+  from { transform: translateX(-180px); }
+  to { transform: translateX(320px); }
+}
+
+@keyframes cloudSlideB {
+  from { transform: translateX(170px) scale(0.75); }
+  to { transform: translateX(-390px) scale(0.75); }
+}
+
+@keyframes lightningFlash {
+  0%, 78%, 100% { opacity: 0; }
+  80%, 86% { opacity: 1; }
+  88% { opacity: 0; }
+  90% { opacity: 1; }
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: Consolas, "Cascadia Mono", "Courier New", "Yu Gothic", monospace;
+  color: var(--text);
+  background:
+    linear-gradient(rgba(56, 242, 165, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(56, 242, 165, 0.04) 1px, transparent 1px),
+    radial-gradient(circle at top right, rgba(51, 191, 255, 0.22), transparent 32%),
+    radial-gradient(circle at bottom left, rgba(56, 242, 165, 0.12), transparent 30%),
+    var(--bg);
+  background-size: 32px 32px, 32px 32px, auto, auto, auto;
+}
+
+.terminal-app {
+  width: min(1180px, calc(100% - 28px));
+  margin: 0 auto;
+  padding: 32px 0;
+}
+
+.terminal-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 24px;
+  align-items: flex-end;
+  margin-bottom: 22px;
+}
+
+.system-label,
+.small-label {
+  margin: 0 0 8px;
+  color: var(--accent);
+  font-size: 13px;
+  letter-spacing: 0.14em;
+  font-weight: 700;
+}
+
+h1 {
+  margin: 0 0 12px;
+  font-size: clamp(34px, 6vw, 72px);
+  line-height: 0.95;
+  text-shadow: 0 0 20px rgba(56, 242, 165, 0.25);
+}
+
+.lead {
+  max-width: 720px;
+  margin: 0;
+  color: var(--sub);
+  line-height: 1.8;
+}
+
+.terminal-status {
+  min-width: 220px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 14px 16px;
+  background: rgba(11, 19, 32, 0.88);
+  box-shadow: var(--shadow);
+  color: var(--accent);
+  font-weight: 700;
+}
+
+.status-light {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 18px var(--accent);
+}
+
+.console-layout {
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  gap: 18px;
+}
+
+.side-panel {
+  padding: 18px;
+}
+
+.panel-title {
+  margin-bottom: 18px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--line);
+  color: var(--accent-2);
+  font-weight: 800;
+}
+
+label {
+  display: block;
+  margin-bottom: 8px;
+  color: var(--sub);
+  font-size: 13px;
+}
+
+select,
+button {
+  width: 100%;
+  border-radius: 10px;
+  padding: 13px 14px;
+  font: inherit;
+}
+
+select {
+  color: var(--text);
+  background: #06101c;
+  border: 1px solid var(--line);
+  margin-bottom: 12px;
+}
+
+button {
+  cursor: pointer;
+  color: #03110b;
+  border: 0;
+  background: var(--accent);
+  font-weight: 900;
+  transition: transform 0.16s ease, opacity 0.16s ease;
+}
+
+button:hover {
+  transform: translateY(-2px);
+  opacity: 0.9;
+}
+
+button:disabled {
+  cursor: wait;
+  opacity: 0.65;
+  transform: none;
+}
+
+.help-box {
+  margin-top: 18px;
+  border: 1px dashed var(--line);
+  border-radius: 12px;
+  padding: 14px;
+  color: var(--sub);
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+.help-box p {
+  margin: 0 0 8px;
+  color: var(--accent);
+}
+
+.help-box ul {
+  margin: 0;
+  padding-left: 18px;
+}
+
+.console-topbar {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--line);
+  background: rgba(16, 27, 44, 0.92);
+  color: var(--sub);
+  font-size: 13px;
+}
+
+.weather-grid {
+  display: grid;
+  grid-template-columns: 1fr 1.1fr 0.85fr;
+  gap: 18px;
+  padding: 20px;
+  align-items: center;
+}
+
+.ascii-window {
+  min-height: 260px;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background:
+    linear-gradient(180deg, rgba(51, 191, 255, 0.12), rgba(56, 242, 165, 0.04));
+}
+
+.ascii-window pre {
+  margin: 0;
+  color: var(--accent);
+  font-size: 20px;
+  line-height: 1.25;
+  text-shadow: 0 0 14px rgba(56, 242, 165, 0.38);
+}
+
+.weather-main h2 {
+  margin: 0 0 8px;
+  font-size: clamp(28px, 4vw, 48px);
+}
+
+.weather-name {
+  margin: 0 0 14px;
+  color: var(--sub);
+}
+
+.temperature-line {
+  font-size: clamp(58px, 9vw, 112px);
+  font-weight: 900;
+  letter-spacing: -0.08em;
+  color: var(--accent);
+  text-shadow: 0 0 26px rgba(56, 242, 165, 0.22);
+}
+
+.unit {
+  font-size: 36px;
+  letter-spacing: 0;
+  color: var(--text);
+}
+
+.character-console {
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 18px;
+  background: rgba(16, 27, 44, 0.78);
+  text-align: center;
+}
+
+.pet {
+  font-size: 74px;
+  margin-bottom: 12px;
+}
+
+.character-console p {
+  margin: 0;
+  color: var(--text);
+  line-height: 1.7;
+}
+
+.metrics {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  padding: 0 20px 20px;
+}
+
+.metric-card {
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 14px;
+  background: rgba(16, 27, 44, 0.78);
+}
+
+.metric-card span {
+  display: block;
+  margin-bottom: 8px;
+  color: var(--sub);
+  font-size: 12px;
+}
+
+.metric-card strong {
+  font-size: 22px;
+  color: var(--text);
+}
+
+.hourly-list {
+  display: grid;
+  grid-template-columns: repeat(8, minmax(88px, 1fr));
+  gap: 10px;
+  padding: 16px;
+}
+
+.hour-card {
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 12px 10px;
+  background: rgba(16, 27, 44, 0.78);
+  text-align: center;
+}
+
+.hour-card .time {
+  color: var(--accent-2);
+  font-weight: 800;
+  margin-bottom: 8px;
+}
+
+.hour-card .icon {
+  font-size: 24px;
+}
+
+.hour-card .temp {
+  margin-top: 4px;
+  font-size: 20px;
+  font-weight: 900;
+}
+
+.hour-card .rain-rate {
+  margin-top: 4px;
+  color: var(--sub);
+  font-size: 12px;
+}
+
+.log-console pre {
+  margin: 0;
+  padding: 16px;
+  min-height: 120px;
+  color: var(--accent);
+  white-space: pre-wrap;
+  line-height: 1.7;
+}
+
+.theme-clear { border-color: rgba(255, 209, 102, 0.58); }
+
+.theme-clear .temperature-line,
+.theme-clear .ascii-window pre { color: var(--warn); }
+
+.theme-rain { border-color: rgba(51, 191, 255, 0.68); }
+
+.theme-rain .temperature-line,
+.theme-rain .ascii-window pre { color: var(--accent-2); }
+
+.theme-cloudy { border-color: rgba(125, 162, 184, 0.72); }
+
+.theme-snow { border-color: rgba(213, 243, 255, 0.82); }
+
+.theme-storm { border-color: rgba(255, 92, 122, 0.8); }
+
+.theme-storm .temperature-line,
+.theme-storm .ascii-window pre { color: var(--danger); }
+
+.theme-error { border-color: rgba(255, 92, 122, 0.85); }
+
+.theme-error .temperature-line,
+.theme-error .ascii-window pre { color: var(--danger); }
+
+/* メニュー集約版：天気以外の操作は右サイドメニューに格納 */
+input[type="text"] {
+  width: 100%;
+  border-radius: 10px;
+  padding: 13px 14px;
+  color: var(--text);
+  background: #06101c;
+  border: 1px solid var(--line);
+  margin-bottom: 12px;
+  font: inherit;
+}
+
+.visually-hidden {
+  display: none;
+}
+
+/* 窓枠だけを表示するモード */
+body.window-only-mode {
+  overflow: hidden;
+}
+
+body.window-only-mode .terminal-header,
+body.window-only-mode .side-panel,
+body.window-only-mode .forecast-console,
+body.window-only-mode .weather-main,
+body.window-only-mode .character-console,
+body.window-only-mode .metrics {
+  display: none !important;
+}
+
+body.window-only-mode .terminal-app {
+  width: 100vw;
+  height: 100vh;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  place-items: center;
+}
+
+body.window-only-mode .console-layout {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+body.window-only-mode .main-console {
+  width: 100%;
+  height: 100%;
+  border: 0;
+  border-radius: 0;
+  background: radial-gradient(circle at center, rgba(51,191,255,0.12), transparent 58%), #050b12;
+  box-shadow: none;
+}
+
+body.window-only-mode .main-console .console-topbar {
+  display: none;
+}
+
+body.window-only-mode .weather-grid {
+  width: 100%;
+  height: 100%;
+  padding: clamp(18px, 4vw, 58px);
+  display: grid;
+  grid-template-columns: 1fr;
+  place-items: center;
+}
+
+body.window-only-mode .terminal-app {
+  position: fixed !important;
+  inset: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  display: block !important;
+  background: transparent !important;
+  pointer-events: none;
+}
+
+body.window-only-mode .terminal-header,
+body.window-only-mode .side-panel,
+body.window-only-mode .console-layout,
+body.window-only-mode .forecast-console,
+body.window-only-mode .main-console,
+body.window-only-mode .log-console {
+  display: none !important;
+}
+
+.immersive-room {
+  position: relative;
+  width: min(94vw, 1320px);
+  height: min(88vh, 820px);
+  display: grid;
+  place-items: center;
+  isolation: isolate;
+}
+
+.immersive-sky {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(180deg, #68c9ff 0 58%, #c8f2ff 58% 100%);
+  transition: background 0.45s ease;
+}
+
+.immersive-sun,
+.immersive-moon {
+  position: absolute;
+  left: 8%;
+  top: 10%;
+  width: clamp(38px, 5vw, 72px);
+  height: clamp(38px, 5vw, 72px);
+  background: #ffd95e;
+  box-shadow:
+    0 0 0 clamp(10px, 1.2vw, 18px) rgba(255, 217, 94, 0.23),
+    0 0 0 clamp(22px, 2.5vw, 42px) rgba(255, 217, 94, 0.11);
+  animation: immersivePulse 2.6s steps(2, end) infinite;
+  z-index: 2;
+}
+
+.immersive-moon {
+  display: none;
+  background: #eef7ff;
+  box-shadow:
+    16px -8px 0 #83a5bd,
+    0 0 0 18px rgba(238, 247, 255, 0.12);
+}
+
+.immersive-cloud {
+  position: absolute;
+  width: clamp(90px, 12vw, 170px);
+  height: clamp(28px, 3.2vw, 48px);
+  background: #fff6d8;
+  box-shadow:
+    clamp(18px, 2.2vw, 34px) clamp(-14px, -1.6vw, -22px) 0 #fff6d8,
+    clamp(42px, 5vw, 72px) clamp(-20px, -2vw, -34px) 0 #fff6d8,
+    clamp(72px, 8vw, 118px) clamp(-8px, -0.8vw, -14px) 0 #fff6d8,
+    0 clamp(12px, 1.2vw, 20px) 0 rgba(255,255,255,0.42);
+  z-index: 5;
+  opacity: 0.92;
+}
+
+.cloud-a {
+  top: 16%;
+  left: 20%;
+  animation: immersiveCloudA 22s linear infinite;
+}
+
+.cloud-b {
+  top: 28%;
+  left: 66%;
+  transform: scale(0.72);
+  opacity: 0.72;
+  animation: immersiveCloudB 28s linear infinite;
+}
+
+.cloud-c {
+  top: 10%;
+  left: 74%;
+  transform: scale(0.52);
+  opacity: 0.48;
+  animation: immersiveCloudC 34s linear infinite;
+}
+
+.immersive-far-mountains {
+  position: absolute;
+  left: -8%;
+  right: -8%;
+  bottom: 26%;
+  height: 32%;
+  background:
+    linear-gradient(135deg, transparent 0 46%, #5c8aa5 46% 58%, transparent 58%),
+    linear-gradient(225deg, transparent 0 43%, #4d7d99 43% 57%, transparent 57%);
+  background-size: 420px 230px, 520px 250px;
+  background-position: 0 40px, 240px 28px;
+  opacity: 0.72;
+  z-index: 3;
+}
+
+.immersive-near-hills {
+  position: absolute;
+  left: -10%;
+  right: -10%;
+  bottom: 14%;
+  height: 28%;
+  background:
+    linear-gradient(135deg, transparent 0 44%, #3e9564 44% 58%, transparent 58%),
+    linear-gradient(225deg, transparent 0 42%, #2f7d54 42% 58%, transparent 58%);
+  background-size: 360px 180px, 450px 190px;
+  background-position: 0 52px, 200px 48px;
+  z-index: 4;
+}
+
+.immersive-buildings {
+  position: absolute;
+  left: 9%;
+  right: 9%;
+  bottom: 12%;
+  height: 28%;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  z-index: 6;
+}
+
+.immersive-buildings span {
+  display: block;
+  width: clamp(34px, 5vw, 74px);
+  background: #19314c;
+  box-shadow:
+    inset 8px 10px 0 rgba(255, 232, 122, 0.65),
+    inset 26px 10px 0 rgba(255, 232, 122, 0.65),
+    inset 8px 36px 0 rgba(255, 232, 122, 0.36),
+    inset 26px 36px 0 rgba(255, 232, 122, 0.36),
+    inset 8px 62px 0 rgba(255, 232, 122, 0.24);
+}
+
+.immersive-buildings span:nth-child(1) { height: 45%; }
+
+.immersive-buildings span:nth-child(2) { height: 70%; }
+
+.immersive-buildings span:nth-child(3) { height: 58%; }
+
+.immersive-buildings span:nth-child(4) { height: 82%; }
+
+.immersive-buildings span:nth-child(5) { height: 52%; }
+
+.immersive-buildings span:nth-child(6) { height: 68%; }
+
+.immersive-trees {
+  position: absolute;
+  left: 5%;
+  right: 5%;
+  bottom: 10%;
+  display: flex;
+  justify-content: space-around;
+  z-index: 7;
+}
+
+.immersive-trees span {
+  width: clamp(20px, 2.6vw, 36px);
+  height: clamp(46px, 7vw, 78px);
+  background:
+    linear-gradient(90deg, transparent 0 42%, #5b3b22 42% 58%, transparent 58%),
+    linear-gradient(135deg, transparent 0 30%, #1e7d4b 30% 70%, transparent 70%);
+  opacity: 0.9;
+}
+
+.immersive-ground {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 16%;
+  background:
+    repeating-linear-gradient(90deg, #2e7a4d 0 28px, #286a44 28px 56px);
+  z-index: 8;
+}
+
+.immersive-rain,
+.immersive-snow {
+  position: absolute;
+  display: none;
+  z-index: 12;
+  pointer-events: none;
+}
+
+.immersive-rain {
+  top: -10%;
+  width: 5px;
+  height: 58px;
+  background: #63d4ff;
+  opacity: 0.84;
+  animation: immersiveRain 0.7s linear infinite;
+}
+
+.rain-a { left: 10%; animation-delay: 0s; }
+
+.rain-b { left: 22%; animation-delay: 0.1s; }
+
+.rain-c { left: 34%; animation-delay: 0.2s; }
+
+.rain-d { left: 47%; animation-delay: 0.3s; }
+
+.rain-e { left: 58%; animation-delay: 0.4s; }
+
+.rain-f { left: 70%; animation-delay: 0.5s; }
+
+.rain-g { left: 82%; animation-delay: 0.6s; }
+
+.rain-h { left: 92%; animation-delay: 0.7s; }
+
+.immersive-snow {
+  top: -10%;
+  width: clamp(8px, 1.1vw, 14px);
+  height: clamp(8px, 1.1vw, 14px);
+  background: #fff;
+  opacity: 0.95;
+  animation: immersiveSnow 5s linear infinite;
+}
+
+.snow-a { left: 12%; animation-delay: 0s; }
+
+.snow-b { left: 25%; animation-delay: 0.7s; }
+
+.snow-c { left: 41%; animation-delay: 1.5s; }
+
+.snow-d { left: 57%; animation-delay: 2.1s; }
+
+.snow-e { left: 73%; animation-delay: 2.8s; }
+
+.snow-f { left: 88%; animation-delay: 3.5s; }
+
+.immersive-lightning {
+  position: absolute;
+  display: none;
+  top: 12%;
+  left: 62%;
+  width: clamp(30px, 4vw, 58px);
+  height: clamp(100px, 16vw, 190px);
+  background: #ffef57;
+  clip-path: polygon(35% 0, 100% 0, 58% 43%, 100% 43%, 14% 100%, 42% 54%, 0 54%);
+  filter: drop-shadow(0 0 18px rgba(255, 239, 87, 0.9));
+  z-index: 14;
+  animation: immersiveLightning 2.8s steps(2, end) infinite;
+}
+
+.immersive-glass {
+  position: absolute;
+  inset: 0;
+  z-index: 18;
+  pointer-events: none;
+  background:
+    linear-gradient(122deg, transparent 0 23%, rgba(255,255,255,0.12) 24% 26%, transparent 27% 100%),
+    linear-gradient(70deg, transparent 0 64%, rgba(255,255,255,0.08) 65% 66%, transparent 67% 100%),
+    repeating-linear-gradient(0deg, rgba(255,255,255,0.035) 0 2px, transparent 2px 10px);
+  mix-blend-mode: screen;
+}
+
+.immersive-cross {
+  position: absolute;
+  z-index: 20;
+  background:
+    linear-gradient(90deg, #152334, #314963 48%, #0d1723);
+  box-shadow: 0 0 18px rgba(0,0,0,0.36);
+}
+
+.immersive-cross.vertical {
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: clamp(10px, 1.3vw, 22px);
+  transform: translateX(-50%);
+}
+
+.immersive-cross.horizontal {
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: clamp(10px, 1.3vw, 22px);
+  transform: translateY(-50%);
+}
+
+.window-sill {
+  position: absolute;
+  left: 50%;
+  bottom: clamp(10px, 2vh, 22px);
+  width: min(80vw, 1000px);
+  height: clamp(34px, 6vh, 70px);
+  transform: translateX(-50%);
+  background:
+    linear-gradient(180deg, #33495f, #152232);
+  border: 1px solid rgba(213,243,255,0.12);
+  border-radius: 0 0 22px 22px;
+  box-shadow:
+    inset 0 8px 0 rgba(255,255,255,0.04),
+    0 18px 42px rgba(0,0,0,0.45);
+  z-index: 3;
+}
+
+.sill-highlight {
+  position: absolute;
+  left: 4%;
+  right: 4%;
+  top: 8px;
+  height: 4px;
+  background: rgba(255,255,255,0.14);
+}
+
+.small-plant {
+  position: absolute;
+  right: 8%;
+  bottom: 18px;
+  width: 58px;
+  height: 78px;
+}
+
+.small-plant::after {
+  content: "";
+  position: absolute;
+  left: 14px;
+  bottom: 0;
+  width: 32px;
+  height: 26px;
+  background: #6b4331;
+  border-radius: 0 0 8px 8px;
+}
+
+.small-plant span {
+  position: absolute;
+  bottom: 24px;
+  left: 24px;
+  width: 16px;
+  height: 34px;
+  background: #33a86b;
+  transform-origin: bottom center;
+}
+
+.small-plant span:nth-child(1) { transform: rotate(-38deg); }
+
+.small-plant span:nth-child(2) { transform: rotate(0deg); height: 44px; }
+
+.small-plant span:nth-child(3) { transform: rotate(38deg); }
+
+@keyframes immersivePulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.12); }
+}
+
+@keyframes immersiveCloudA {
+  from { transform: translateX(-34vw); }
+  to { transform: translateX(74vw); }
+}
+
+@keyframes immersiveCloudB {
+  from { transform: translateX(26vw) scale(0.72); }
+  to { transform: translateX(-92vw) scale(0.72); }
+}
+
+@keyframes immersiveCloudC {
+  from { transform: translateX(16vw) scale(0.52); }
+  to { transform: translateX(-86vw) scale(0.52); }
+}
+
+@keyframes immersiveRain {
+  from { transform: translateY(-12vh); opacity: 0; }
+  20% { opacity: 0.95; }
+  to { transform: translateY(92vh); opacity: 0.08; }
+}
+
+@keyframes immersiveSnow {
+  from { transform: translateY(-14vh) translateX(0); opacity: 0; }
+  16% { opacity: 1; }
+  to { transform: translateY(88vh) translateX(34px); opacity: 0.3; }
+}
+
+@keyframes immersiveLightning {
+  0%, 76%, 100% { opacity: 0; }
+  80%, 86% { opacity: 1; }
+  88% { opacity: 0; }
+  91% { opacity: 1; }
+}
+
+@keyframes imageCloudMove {
+  from { transform: translateX(-28vw); }
+  to { transform: translateX(42vw); }
+}
+
+@keyframes imageRainFall {
+  from { transform: translateY(-18vh) rotate(10deg); opacity: 0; }
+  20% { opacity: 1; }
+  to { transform: translateY(92vh) rotate(10deg); opacity: 0.12; }
+}
+
+@keyframes imageSnowFall {
+  from { transform: translateY(-16vh) translateX(0); opacity: 0; }
+  16% { opacity: 1; }
+  to { transform: translateY(88vh) translateX(32px); opacity: 0.35; }
+}
+
+@keyframes imageLightning {
+  0%, 76%, 100% { opacity: 0; }
+  80%, 86% { opacity: 1; }
+  88% { opacity: 0; }
+  91% { opacity: 1; }
+}
+
+/* 前バージョンの専用窓部品は画像版では非表示 */
+.immersive-room {
+  display: none;
+}
+
+@keyframes layeredCloudMove {
+  from { transform: translateX(-20vw); }
+  to { transform: translateX(92vw); }
+}
+
+@keyframes layeredRainFall {
+  from { transform: translateY(-18vh) rotate(10deg); opacity: 0; }
+  20% { opacity: 1; }
+  to { transform: translateY(74vh) rotate(10deg); opacity: 0.14; }
+}
+
+@keyframes layeredSnowFall {
+  from { transform: translateY(-16vh) translateX(0); opacity: 0; }
+  16% { opacity: 1; }
+  to { transform: translateY(72vh) translateX(32px); opacity: 0.35; }
+}
+
+@keyframes layeredLightning {
+  0%, 76%, 100% { opacity: 0; }
+  80%, 86% { opacity: 1; }
+  88% { opacity: 0; }
+  91% { opacity: 1; }
+}
+
+body.window-only-mode .terminal-app {
+  pointer-events: none !important;
+}
+
+@keyframes starBlink {
+  0%, 100% { opacity: 0.35; }
+  50% { opacity: 1; }
+}
+
+/* 通常メイン画面にも、時間帯に応じた淡いグラデーションを追加 */
+.main-console {
+  position: relative;
+  overflow: hidden;
+}
+
+.main-console::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.16;
+  background:
+    radial-gradient(circle at var(--panel-grad-x, 82%) 8%, var(--panel-grad-a, rgba(255, 223, 130, 0.22)), transparent 22%),
+    linear-gradient(135deg, var(--panel-grad-b, rgba(51, 191, 255, 0.08)), transparent 55%);
+  background-size: 180% 180%;
+  animation: gradientMorph 16s ease-in-out infinite alternate;
+}
+
+.main-console > * {
+  position: relative;
+  z-index: 1;
+}
+
+@keyframes gradientMorph {
+  0% {
+    background-position: 0% 45%;
+    filter: hue-rotate(0deg) brightness(1);
+  }
+  50% {
+    background-position: 100% 55%;
+    filter: hue-rotate(4deg) brightness(1.04);
+  }
+  100% {
+    background-position: 35% 100%;
+    filter: hue-rotate(-3deg) brightness(0.98);
+  }
+}
+
+/* =========================================================
+   POSITION ONLY LAYOUT
+   添付画像は配置だけ参考。デザインは従来の管理画面風UIを維持。
+   ========================================================= */
+
+body:not(.window-only-mode) {
+  overflow: hidden;
+}
+
+.position-layout-site {
+  width: min(1440px, calc(100vw - 24px));
+  height: min(96vh, 980px);
+  margin: 2vh auto;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  gap: 14px;
+}
+
+.position-layout-site .terminal-header {
+  padding: 14px 18px;
+  border-radius: 22px;
+}
+
+.position-layout-site .terminal-header h1 {
+  font-size: clamp(34px, 3.6vw, 54px);
+  margin: 0;
+}
+
+.position-layout-site .lead {
+  margin-top: 8px;
+  max-width: 64ch;
+}
+
+.position-dashboard {
+  min-height: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(340px, 0.82fr);
+  grid-template-rows: 96px minmax(0, 1fr) minmax(150px, 0.34fr);
+  grid-template-areas:
+    "city weather"
+    "window weather"
+    "forecast forecast";
+  gap: 14px;
+}
+
+.position-city {
+  grid-area: city;
+  min-height: 0;
+}
+
+.position-window {
+  grid-area: window;
+  min-height: 0;
+}
+
+.position-weather {
+  grid-area: weather;
+  min-height: 0;
+}
+
+.position-forecast {
+  grid-area: forecast;
+  min-height: 0;
+  margin: 0;
+}
+
+.console-card,
+.position-forecast {
+  border-radius: 22px;
+  border: 1px solid rgba(56, 242, 165, 0.18);
+  background:
+    linear-gradient(135deg, rgba(56, 242, 165, 0.06), transparent 42%),
+    rgba(7, 13, 23, 0.78);
+  box-shadow:
+    inset 0 0 0 1px rgba(213, 243, 255, 0.05),
+    0 18px 58px rgba(0, 0, 0, 0.28);
+  overflow: hidden;
+}
+
+.position-city-body {
+  height: calc(100% - 38px);
+  padding: 12px 14px;
+  display: grid;
+  grid-template-columns: auto minmax(150px, 1fr) auto;
+  gap: 10px;
+  align-items: center;
+}
+
+.position-city-body label {
+  color: var(--muted);
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  font-weight: 700;
+}
+
+.position-city-body select,
+.position-city-body button {
+  min-height: 42px;
+}
+
+.position-window {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+}
+
+.position-weather {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+}
+
+.weather-info-stack {
+  min-height: 0;
+  padding: 16px;
+  display: grid;
+  grid-template-rows: auto auto minmax(0, 1fr);
+  gap: 14px;
+}
+
+.position-weather .weather-main {
+  padding: 18px;
+  border: 1px solid rgba(213, 243, 255, 0.08);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.035);
+}
+
+.position-weather .city-label {
+  display: inline-block;
+  color: var(--accent);
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  font-weight: 800;
+  margin-bottom: 8px;
+}
+
+.position-weather #cityName {
+  margin: 0;
+  font-size: clamp(34px, 4.8vw, 58px);
+  line-height: 1.02;
+}
+
+.position-weather #weatherName {
+  margin: 8px 0 0;
+  font-size: 22px;
+  color: rgba(213, 243, 255, 0.72);
+}
+
+.temperature-line {
+  display: flex;
+  align-items: flex-end;
+  gap: 6px;
+  margin-top: 10px;
+}
+
+.temperature-line #temperature {
+  font-size: clamp(72px, 8vw, 116px);
+  line-height: 0.95;
+  font-weight: 900;
+}
+
+.temperature-line span {
+  font-size: 34px;
+  font-weight: 800;
+  margin-bottom: 8px;
+  color: var(--muted);
+}
+
+.position-weather .metrics {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.position-weather .metric-card {
+  border-radius: 16px;
+}
+
+.position-weather .character-console {
+  min-height: 0;
+  display: grid;
+  grid-template-columns: 80px 1fr;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+  border: 1px solid rgba(213, 243, 255, 0.08);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.035);
+}
+
+.position-weather .pet-icon {
+  font-size: 56px;
+  display: grid;
+  place-items: center;
+}
+
+.position-weather .pet-message {
+  margin: 0;
+  line-height: 1.6;
+  font-size: 17px;
+}
+
+.position-forecast {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+}
+
+.position-forecast .hourly-list {
+  min-height: 0;
+  padding: 14px;
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 10px;
+  overflow: hidden;
+}
+
+.position-forecast .hour-card {
+  min-height: 0;
+  height: 100%;
+  border-radius: 16px;
+  padding: 12px;
+}
+
+.position-forecast .hour-icon {
+  font-size: 28px;
+}
+
+.position-forecast .hour-temp {
+  font-size: 22px;
+}
+
+.position-forecast .hour-meta {
+  font-size: 12px;
+}
+
+/* =========================================================
+   BOOT / MENU FIX
+   - タイトル画面中にMENUを表示しない
+   - JS初期化用の互換要素を非表示
+   ========================================================= */
+
+.compat-hidden {
+  display: none !important;
+}
+
+/* =========================================================
+   NO HEADER / FIT SCREEN FIX
+   WeatherSpot Terminal の大きいヘッダーを削除し、
+   空いた高さを小窓枠・天気情報・予報一覧に割り当てる。
+   ========================================================= */
+
+.position-layout-site {
+  height: min(98vh, 980px) !important;
+  margin: 1vh auto !important;
+  display: grid !important;
+  grid-template-rows: minmax(0, 1fr) !important;
+  gap: 0 !important;
+}
+
+.position-layout-site > .terminal-header {
+  display: none !important;
+}
+
+.position-dashboard {
+  height: 100% !important;
+  min-height: 0 !important;
+  grid-template-columns: minmax(0, 1.1fr) minmax(330px, 0.82fr) !important;
+  grid-template-rows: 92px minmax(0, 1fr) 178px !important;
+  grid-template-areas:
+    "city weather"
+    "window weather"
+    "forecast forecast" !important;
+  gap: 12px !important;
+}
+
+.position-city,
+.position-window,
+.position-weather,
+.position-forecast {
+  min-height: 0 !important;
+  overflow: hidden !important;
+}
+
+.position-city-body {
+  height: calc(100% - 38px) !important;
+  padding: 10px 12px !important;
+  grid-template-columns: auto minmax(140px, 1fr) auto !important;
+  gap: 10px !important;
+}
+
+.mini-status-row {
+  grid-column: 1 / -1;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.mini-status-row .status-chip {
+  font-size: 11px;
+  padding: 4px 8px;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.position-city-body label {
+  white-space: nowrap;
+}
+
+.position-city-body select,
+.position-city-body button {
+  min-height: 34px !important;
+  height: 36px !important;
+}
+
+.position-window {
+  display: grid !important;
+  grid-template-rows: auto minmax(0, 1fr) !important;
+}
+
+.position-weather {
+  display: grid !important;
+  grid-template-rows: auto minmax(0, 1fr) !important;
+}
+
+.weather-info-stack {
+  min-height: 0 !important;
+  height: 100% !important;
+  padding: 12px !important;
+  display: grid !important;
+  grid-template-rows: minmax(0, 1.06fr) auto minmax(92px, 0.42fr) !important;
+  gap: 10px !important;
+}
+
+.position-weather .weather-main {
+  min-height: 0 !important;
+  padding: 14px !important;
+  overflow: hidden !important;
+}
+
+.position-weather #cityName {
+  font-size: clamp(30px, 4.2vw, 52px) !important;
+}
+
+.position-weather #weatherName {
+  font-size: 20px !important;
+}
+
+.temperature-line {
+  margin-top: 6px !important;
+}
+
+.temperature-line #temperature {
+  font-size: clamp(62px, 7vw, 100px) !important;
+}
+
+.temperature-line span {
+  font-size: 28px !important;
+}
+
+.position-weather .metrics {
+  grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+  gap: 8px !important;
+}
+
+.position-weather .metric-card {
+  padding: 10px !important;
+  min-height: 0 !important;
+}
+
+.position-weather .metric-card strong {
+  font-size: clamp(17px, 1.6vw, 24px) !important;
+}
+
+.position-weather .character-console {
+  min-height: 0 !important;
+  padding: 10px 12px !important;
+  grid-template-columns: 56px 1fr !important;
+}
+
+.position-weather .pet-icon {
+  font-size: 38px !important;
+}
+
+.position-weather .pet-message {
+  font-size: 14px !important;
+  line-height: 1.45 !important;
+}
+
+.position-forecast {
+  height: 100% !important;
+  display: grid !important;
+  grid-template-rows: auto minmax(0, 1fr) !important;
+}
+
+.position-forecast .hourly-list {
+  height: 100% !important;
+  min-height: 0 !important;
+  padding: 10px 12px !important;
+  display: grid !important;
+  grid-template-columns: repeat(6, minmax(0, 1fr)) !important;
+  gap: 8px !important;
+  overflow: hidden !important;
+}
+
+.position-forecast .hour-card {
+  height: 100% !important;
+  min-height: 0 !important;
+  padding: 9px !important;
+  overflow: hidden !important;
+}
+
+.position-forecast .hour-time {
+  font-size: 12px !important;
+}
+
+.position-forecast .hour-icon {
+  font-size: 24px !important;
+  line-height: 1 !important;
+}
+
+.position-forecast .hour-temp {
+  font-size: 19px !important;
+}
+
+.position-forecast .hour-meta {
+  font-size: 11px !important;
+  line-height: 1.25 !important;
+}
+
+/* =========================================================
+   FINAL UI FIT IMPROVEMENT
+   目的: 1画面内での収まりを改善し、MENUとの重なりを減らす
+   ========================================================= */
+
+.position-layout-site,
+.position-dashboard,
+.position-dashboard > section,
+.weather-info-stack,
+.position-forecast .hourly-list,
+.position-city-body,
+.position-weather #cityName {
+  min-width: 0;
+}
+
+body {
+  overflow: hidden;
+}
+
+.position-layout-site {
+  width: min(1600px, calc(100vw - 30px)) !important;
+  max-width: calc(100vw - 30px) !important;
+  height: min(97vh, 960px) !important;
+  margin: 1.2vh auto !important;
+  padding-right: 92px !important; /* MENUボタン分の安全領域 */
+}
+
+.position-dashboard {
+  grid-template-columns: minmax(0, 1.18fr) minmax(400px, 0.92fr) !important;
+  grid-template-rows: 108px minmax(0, 1fr) 174px !important;
+  gap: 10px !important;
+}
+
+.position-city,
+.position-window,
+.position-weather,
+.position-forecast {
+  display: grid !important;
+  grid-template-rows: auto minmax(0, 1fr) !important;
+}
+
+.console-topbar {
+  min-height: 40px !important;
+  padding: 9px 14px !important;
+  font-size: 12px !important;
+}
+
+.position-city-body {
+  height: auto !important;
+  min-height: 0 !important;
+  align-content: center !important;
+  grid-template-columns: auto minmax(180px, 1fr) minmax(180px, 220px) !important;
+  grid-auto-rows: min-content !important;
+  padding: 8px 12px !important;
+  gap: 8px !important;
+}
+
+.position-city-body label {
+  margin: 0 !important;
+  align-self: center !important;
+  font-size: 13px !important;
+}
+
+.position-city-body select,
+.position-city-body button {
+  margin: 0 !important;
+  height: 38px !important;
+  min-height: 38px !important;
+  padding: 8px 12px !important;
+}
+
+.mini-status-row {
+  margin-bottom: 2px !important;
+}
+
+.mini-status-row .status-chip {
+  font-size: 10px !important;
+  padding: 4px 7px !important;
+}
+
+.position-weather {
+  overflow: hidden !important;
+}
+
+.weather-info-stack {
+  padding: 10px !important;
+  gap: 8px !important;
+  grid-template-rows: minmax(0, 1fr) auto minmax(84px, auto) !important;
+}
+
+.position-weather .weather-main {
+  padding: 12px !important;
+}
+
+.city-label {
+  font-size: 13px !important;
+}
+
+.position-weather #cityName {
+  margin: 6px 0 8px !important;
+  font-size: clamp(24px, 2.9vw, 46px) !important;
+  line-height: 1.08 !important;
+  letter-spacing: 0.01em !important;
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+}
+
+.position-weather #weatherName {
+  margin: 0 0 8px !important;
+  font-size: 18px !important;
+}
+
+.temperature-line {
+  margin-top: 4px !important;
+}
+
+.temperature-line #temperature {
+  font-size: clamp(52px, 5.8vw, 88px) !important;
+  line-height: 0.95 !important;
+}
+
+.temperature-line span {
+  font-size: clamp(22px, 1.9vw, 30px) !important;
+}
+
+.position-weather .metrics {
+  padding: 0 !important;
+  gap: 8px !important;
+  grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+}
+
+.position-weather .metric-card {
+  padding: 8px 10px !important;
+  border-radius: 16px !important;
+}
+
+.position-weather .metric-card .metric-label,
+.position-weather .metric-card span {
+  margin-bottom: 6px !important;
+  font-size: 11px !important;
+}
+
+.position-weather .metric-card strong {
+  font-size: clamp(15px, 1.35vw, 22px) !important;
+}
+
+.position-weather .character-console {
+  padding: 10px 12px !important;
+  display: grid !important;
+  grid-template-columns: 56px 1fr !important;
+  align-items: center !important;
+  gap: 10px !important;
+  text-align: left !important;
+}
+
+.position-weather .pet-icon,
+.position-weather #petFace {
+  font-size: 34px !important;
+  line-height: 1 !important;
+}
+
+.position-weather .pet-message,
+.position-weather #petMessage {
+  margin: 0 !important;
+  font-size: 13px !important;
+  line-height: 1.45 !important;
+}
+
+.position-forecast {
+  overflow: hidden !important;
+}
+
+.position-forecast .hourly-list {
+  padding: 8px 10px 10px !important;
+  gap: 8px !important;
+  grid-template-columns: repeat(6, minmax(0, 1fr)) !important;
+  overflow: hidden !important;
+}
+
+.position-forecast .hour-card {
+  padding: 8px 6px !important;
+  border-radius: 16px !important;
+}
+
+.position-forecast .hour-time {
+  font-size: 11px !important;
+  margin-bottom: 6px !important;
+}
+
+.position-forecast .hour-icon {
+  font-size: 20px !important;
+}
+
+.position-forecast .hour-temp {
+  font-size: 16px !important;
+  margin-top: 3px !important;
+}
+
+.position-forecast .hour-meta {
+  font-size: 10px !important;
+  line-height: 1.2 !important;
+}
+
+@keyframes sceneSunPulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.12); }
+}
+
+@keyframes sceneCloudSlideA {
+  from { transform: translateX(-180px); }
+  to { transform: translateX(320px); }
+}
+
+@keyframes sceneCloudSlideB {
+  from { transform: translateX(170px) scale(0.75); }
+  to { transform: translateX(-390px) scale(0.75); }
+}
+
+@keyframes sceneCloudSlideC {
+  from { transform: translateX(0) scale(0.58); }
+  to { transform: translateX(520px) scale(0.58); }
+}
+
+@keyframes sceneRainFall {
+  from { transform: translateY(-42px); opacity: 0; }
+  20% { opacity: 1; }
+  to { transform: translateY(190px); opacity: 0.1; }
+}
+
+@keyframes sceneSnowFall {
+  from { transform: translateY(-28px); opacity: 0; }
+  16% { opacity: 1; }
+  to { transform: translateY(170px); opacity: 0.25; }
+}
+
+@keyframes sceneLightningFlash {
+  0%, 78%, 100% { opacity: 0; }
+  80%, 86% { opacity: 1; }
+  88% { opacity: 0; }
+  90% { opacity: 1; }
+}
+
+@keyframes sceneStarBlink {
+  0%, 100% { opacity: 0.35; }
+  50% { opacity: 1; }
+}
+
+@keyframes smallWindowRuralDrift {
+  from { transform: translateX(-1.2%); }
+  to   { transform: translateX(1.2%); }
+}
+
+@keyframes smallWindowUrbanDrift {
+  from { transform: translateX(0.8%); }
+  to   { transform: translateX(-0.8%); }
+}
+
+/* =========================================================
+   PIXEL UI SKIN
+   全体のUIをドット絵 / レトロゲーム風に寄せるスキン
+   ========================================================= */
+
+:root {
+  --pixel-bg-1: #07121f;
+  --pixel-bg-2: #0c2235;
+  --pixel-panel: #10283a;
+  --pixel-panel-2: #132e45;
+  --pixel-line: #39d7a2;
+  --pixel-line-dark: #0f7a63;
+  --pixel-text: #d9f7ff;
+  --pixel-sub: #8fcad6;
+  --pixel-accent: #4df3b4;
+  --pixel-accent-dark: #1a9b74;
+  --pixel-orange: #ffd35a;
+  --pixel-shadow: #031019;
+}
+
+html, body {
+  image-rendering: pixelated;
+}
+
+body {
+  background:
+    linear-gradient(180deg, rgba(77,243,180,0.06), rgba(0,0,0,0) 24%),
+    repeating-linear-gradient(0deg, rgba(80, 170, 190, 0.08) 0 1px, transparent 1px 24px),
+    repeating-linear-gradient(90deg, rgba(80, 170, 190, 0.08) 0 1px, transparent 1px 24px),
+    linear-gradient(180deg, var(--pixel-bg-2), var(--pixel-bg-1));
+  color: var(--pixel-text);
+  font-family: "MS Gothic", "Osaka-Mono", "Courier New", monospace !important;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background: repeating-linear-gradient(180deg, rgba(255,255,255,0.02) 0 2px, rgba(0,0,0,0) 2px 4px);
+  opacity: 0.22;
+  mix-blend-mode: screen;
+  z-index: 1;
+}
+
+.position-layout-site {
+  position: relative;
+  z-index: 2;
+}
+
+.console-topbar {
+  border-radius: 0 !important;
+  border-bottom: 3px solid rgba(57, 215, 162, 0.28) !important;
+  background:
+    repeating-linear-gradient(90deg, rgba(255,255,255,0.025) 0 8px, rgba(0,0,0,0) 8px 16px),
+    linear-gradient(180deg, #15334a, #0e2437) !important;
+  color: var(--pixel-sub) !important;
+  text-transform: lowercase;
+  letter-spacing: 0.08em;
+}
+
+.position-city-body select,
+.menu-panel select,
+.menu-panel input {
+  background:
+    linear-gradient(180deg, #081721 0%, #0f2230 50%, #0a1925 50%, #0a1925 100%) !important;
+  color: var(--pixel-text) !important;
+  box-shadow:
+    0 0 0 2px rgba(3, 16, 25, 0.85),
+    inset 2px 2px 0 rgba(255,255,255,0.05),
+    inset -2px -2px 0 rgba(0,0,0,0.24) !important;
+}
+
+.position-weather #cityName {
+  color: var(--pixel-text) !important;
+  text-shadow: 3px 3px 0 rgba(3,16,25,0.6);
+  letter-spacing: 0.02em;
+}
+
+.position-weather #weatherName,
+.position-weather .pet-message,
+.position-weather .metric-card span,
+.position-forecast .hour-meta,
+.position-forecast .hour-time,
+.position-city-body label {
+  color: var(--pixel-sub) !important;
+}
+
+.temperature-line #temperature {
+  color: var(--pixel-accent) !important;
+  text-shadow:
+    3px 3px 0 rgba(3,16,25,0.75),
+    0 0 12px rgba(77,243,180,0.16);
+}
+
+.position-weather.theme-clear .temperature-line #temperature,
+.position-weather .theme-clear .temperature-line #temperature {
+  color: #52f0b5 !important;
+}
+
+.position-weather.theme-cloudy .temperature-line #temperature,
+.position-weather .theme-cloudy .temperature-line #temperature {
+  color: #c8f1ff !important;
+}
+
+.position-weather.theme-rain .temperature-line #temperature,
+.position-weather.theme-storm .temperature-line #temperature,
+.position-weather.theme-error .temperature-line #temperature {
+  color: #7bd3ff !important;
+}
+
+.position-weather.theme-snow .temperature-line #temperature {
+  color: #f1fdff !important;
+}
+
+.position-weather .metric-card strong,
+.position-forecast .hour-temp {
+  color: var(--pixel-text) !important;
+  text-shadow: 2px 2px 0 rgba(3,16,25,0.55);
+}
+
+.position-weather .metrics {
+  gap: 10px !important;
+}
+
+.position-weather .metric-card,
+.position-forecast .hour-card {
+  background:
+    linear-gradient(180deg, rgba(19, 46, 69, 0.96), rgba(10, 28, 44, 0.96)) !important;
+}
+
+.position-forecast .hour-card {
+  position: relative;
+  overflow: hidden;
+}
+
+.status-chip {
+  border-radius: 0 !important;
+  border: 2px solid rgba(57, 215, 162, 0.22) !important;
+  background: #112738 !important;
+  color: var(--pixel-sub) !important;
+}
+
+.position-forecast .hourly-list {
+  gap: 10px !important;
+}
+
+.weather-info-stack,
+.position-city-body {
+  gap: 10px !important;
+}
+
+.intro-title,
+.loading-title {
+  letter-spacing: 0.08em;
+  text-shadow: 4px 4px 0 rgba(3,16,25,0.72);
+}
+
+/* =========================================================
+   SELECT OPTION READABILITY FIX
+   都市選択ドロップダウン内の文字を見やすくする
+   ========================================================= */
+
+.position-city-body select {
+  color: #eafcff !important;
+  font-size: 16px !important;
+  font-weight: 700 !important;
+  line-height: 1.4 !important;
+}
+
+.position-city-body select option,
+.position-city-body select optgroup {
+  background: #0a1925 !important;
+  color: #eafcff !important;
+  font-size: 16px !important;
+  font-weight: 700 !important;
+}
+
+.position-city-body select option {
+  padding: 10px 12px !important;
+}
+
+.position-city-body select option:checked,
+.position-city-body select option:hover,
+.position-city-body select option:focus {
+  background: #1f6fd6 !important;
+  color: #ffffff !important;
+}
+
+/* 一部ブラウザで薄くなるのを抑える */
+.position-city-body select:focus {
+  color: #ffffff !important;
+  text-shadow: none !important;
+}
+
+/* =========================================================
+   CUSTOM CITY DROPDOWN
+   都市選択をブラウザ標準selectではなく、ドット絵風の自作UIに変更
+   ========================================================= */
+
+.custom-city-select {
+  position: relative;
+  width: 100%;
+  z-index: 40;
+}
+
+.custom-city-select-button {
+  width: 100% !important;
+  min-height: 64px;
+  display: grid !important;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px !important;
+  text-align: left;
+  border-radius: 0 !important;
+  border: 3px solid #0f7a63 !important;
+  background:
+    linear-gradient(180deg, #102a3e 0%, #0b1d2d 50%, #071522 50%, #071522 100%) !important;
+  color: #eafcff !important;
+  box-shadow:
+    0 0 0 2px rgba(3, 16, 25, 0.9),
+    4px 4px 0 rgba(3, 16, 25, 0.75),
+    inset 2px 2px 0 rgba(255,255,255,0.05),
+    inset -2px -2px 0 rgba(0,0,0,0.22) !important;
+}
+
+.custom-city-select-button:hover,
+.custom-city-select.is-open .custom-city-select-button {
+  border-color: #39d7a2 !important;
+  filter: brightness(1.05);
+}
+
+.custom-city-icon,
+.custom-city-option-icon {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border: 2px solid rgba(57, 215, 162, 0.38);
+  background: #071522;
+  box-shadow: inset 2px 2px 0 rgba(255,255,255,0.04);
+  font-size: 18px;
+}
+
+.custom-city-text,
+.custom-city-option-text {
+  min-width: 0;
+  display: grid;
+  gap: 2px;
+}
+
+.custom-city-text strong,
+.custom-city-option-text strong {
+  color: #ffffff;
+  font-size: 16px;
+  line-height: 1.15;
+  letter-spacing: 0.03em;
+  text-shadow: 2px 2px 0 rgba(0,0,0,0.55);
+}
+
+.custom-city-text small,
+.custom-city-option-text small {
+  color: #8fcad6;
+  font-size: 11px;
+  line-height: 1.1;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.custom-city-arrow {
+  color: #4df3b4;
+  font-size: 18px;
+  line-height: 1;
+}
+
+.custom-city-select.is-open .custom-city-arrow {
+  transform: rotate(180deg);
+}
+
+.custom-city-select-menu {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(100% + 8px);
+  display: none;
+  max-height: 280px;
+  overflow-y: auto;
+  padding: 8px;
+  border: 3px solid #0f7a63;
+  background:
+    repeating-linear-gradient(0deg, rgba(77,243,180,0.045) 0 1px, transparent 1px 8px),
+    #081721;
+  box-shadow:
+    0 0 0 2px rgba(3, 16, 25, 0.9),
+    6px 6px 0 rgba(3, 16, 25, 0.85);
+}
+
+.custom-city-select.is-open .custom-city-select-menu {
+  display: grid;
+  gap: 8px;
+}
+
+.custom-city-option {
+  width: 100% !important;
+  min-height: 54px;
+  display: grid !important;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px !important;
+  text-align: left;
+  border: 2px solid rgba(57, 215, 162, 0.24) !important;
+  background:
+    linear-gradient(180deg, #10283a 0%, #0b1d2d 100%) !important;
+  color: #eafcff !important;
+  box-shadow: none !important;
+}
+
+.custom-city-option:hover,
+.custom-city-option:focus {
+  outline: none;
+  border-color: #4df3b4 !important;
+  background:
+    linear-gradient(180deg, #173a54 0%, #0e2a3f 100%) !important;
+}
+
+.custom-city-option.is-selected {
+  border-color: #ffd35a !important;
+  background:
+    linear-gradient(180deg, #24543e 0%, #123324 100%) !important;
+}
+
+.custom-city-option.is-selected .custom-city-option-text strong::after {
+  content: "  SELECTED";
+  color: #ffd35a;
+  font-size: 10px;
+  letter-spacing: 0.08em;
+}
+
+/* hidden selectは処理用に残すだけで画面には見せない */
+#citySelect.compat-hidden {
+  display: none !important;
+}
+
+/* =========================================================
+   CUSTOM DROPDOWN POSITION FIX
+   自作プルダウンが小窓の下に隠れる問題と、
+   選択バー内の文字位置ずれを修正
+   ========================================================= */
+
+/* ドロップダウンが下の小窓に隠れないように、都市選択カードだけは外にはみ出せるようにする */
+.position-layout-site,
+.position-dashboard {
+  overflow: visible !important;
+}
+
+.position-city.console-card,
+.position-city {
+  position: relative !important;
+  z-index: 5000 !important;
+  overflow: visible !important;
+}
+
+.position-city .console-topbar,
+.position-city-body {
+  position: relative !important;
+  z-index: 5001 !important;
+  overflow: visible !important;
+}
+
+/* 下の小窓より都市選択を前面に出す */
+.position-window,
+.position-weather,
+.position-forecast {
+  position: relative;
+  z-index: 1;
+}
+
+/* 都市選択行の高さと並びを安定させる */
+.position-city-body {
+  height: auto !important;
+  min-height: 64px !important;
+  grid-template-columns: auto minmax(260px, 1fr) auto !important;
+  align-items: center !important;
+  gap: 12px !important;
+}
+
+.position-city-body label {
+  align-self: center !important;
+  white-space: nowrap !important;
+}
+
+/* 標準button用の緑背景指定より強い指定で、自作選択バーの見た目を固定 */
+.position-city-body .custom-city-select .custom-city-select-button {
+  width: 100% !important;
+  height: 44px !important;
+  min-height: 44px !important;
+  display: grid !important;
+  grid-template-columns: 30px minmax(0, 1fr) 18px !important;
+  align-items: center !important;
+  gap: 10px !important;
+  padding: 5px 10px !important;
+  text-align: left !important;
+  border-radius: 0 !important;
+  border: 3px solid #0f7a63 !important;
+  background:
+    linear-gradient(180deg, #102a3e 0%, #0b1d2d 50%, #071522 50%, #071522 100%) !important;
+  color: #eafcff !important;
+  box-shadow:
+    0 0 0 2px rgba(3, 16, 25, 0.9),
+    4px 4px 0 rgba(3, 16, 25, 0.75),
+    inset 2px 2px 0 rgba(255,255,255,0.05),
+    inset -2px -2px 0 rgba(0,0,0,0.22) !important;
+  transform: none !important;
+}
+
+/* 選択中表示は1行にして、バー内で文字が上下にずれないようにする */
+.position-city-body .custom-city-select .custom-city-icon {
+  width: 26px !important;
+  height: 26px !important;
+  font-size: 15px !important;
+}
+
+.position-city-body .custom-city-select .custom-city-text {
+  display: block !important;
+  min-width: 0 !important;
+  transform: translateY(1px);
+}
+
+.position-city-body .custom-city-select .custom-city-text strong {
+  display: block !important;
+  overflow: hidden !important;
+  color: #ffffff !important;
+  font-size: 16px !important;
+  line-height: 1 !important;
+  white-space: nowrap !important;
+  text-overflow: ellipsis !important;
+}
+
+/* 選択バー内の補足文は非表示。候補リスト側には表示する */
+.position-city-body .custom-city-select .custom-city-text small {
+  display: none !important;
+}
+
+.position-city-body .custom-city-select .custom-city-arrow {
+  align-self: center !important;
+  justify-self: center !important;
+  color: #4df3b4 !important;
+}
+
+/* 候補リストを小窓より前面に出す */
+.position-city-body .custom-city-select {
+  position: relative !important;
+  z-index: 6000 !important;
+}
+
+.position-city-body .custom-city-select-menu {
+  position: absolute !important;
+  top: calc(100% + 6px) !important;
+  left: 0 !important;
+  right: 0 !important;
+  z-index: 99999 !important;
+  max-height: 260px !important;
+  overflow-y: auto !important;
+}
+
+/* リスト内の項目は読みやすさ優先で少しコンパクトにする */
+.position-city-body .custom-city-option {
+  min-height: 48px !important;
+  padding: 7px 10px !important;
+}
+
+.position-city-body .custom-city-option-icon {
+  width: 28px !important;
+  height: 28px !important;
+  font-size: 16px !important;
+}

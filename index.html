@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>WeatherSpot Terminal</title>
+  <link rel="stylesheet" href="styles/boot.css" />
+  <link rel="stylesheet" href="styles/dashboard.css" />
+  <link rel="stylesheet" href="styles/window.css" />
+  <link rel="stylesheet" href="styles/menu.css" />
+  <link rel="stylesheet" href="styles/responsive.css" />
+  <script src="https://sdk.scdn.co/spotify-player.js"></script>
+</head>
+<body class="is-booting">
+  <section class="intro-screen" id="introScreen">
+    <div class="intro-title-block">
+      <p>WEATHER × MUSIC CONTROL</p>
+      <h1>WeatherSpot</h1>
+      <span>system boot sequence...</span>
+    </div>
+  </section>
+
+  <section class="loading-screen" id="loadingScreen" aria-hidden="true">
+    <div class="loading-window">
+      <div class="loading-topbar">
+        <span>WeatherSpot Terminal</span>
+        <span>loading...</span>
+      </div>
+      <pre id="loadingCode">&gt; initializing...</pre>
+    </div>
+  </section>
+
+
+  <section class="immersive-window-scene theme-clear" id="immersiveWindowScene" aria-hidden="true">
+    <div class="layered-room-scene">
+      <div class="room-layer room-background-layer" aria-hidden="true">
+        <div class="large-room-sky large-room-sky-day"></div>
+      </div>
+
+      <div class="grad-hero" aria-hidden="true">Gradient Morph</div>
+
+      <div class="room-layer room-weather-layer" aria-hidden="true">
+        <div class="window-weather-viewport">
+          <div class="image-weather-tint"></div>
+          <div class="image-weather-clouds">
+            <span></span><span></span><span></span>
+          </div>
+          <div class="image-weather-rain">
+            <span></span><span></span><span></span><span></span><span></span>
+            <span></span><span></span><span></span><span></span><span></span>
+          </div>
+          <div class="image-weather-snow">
+            <span></span><span></span><span></span><span></span><span></span>
+            <span></span><span></span><span></span><span></span><span></span>
+          </div>
+          <div class="image-weather-lightning"></div>
+          <div class="image-night-moon"></div>
+          <div class="image-night-stars"><span></span><span></span><span></span><span></span><span></span><span></span></div>
+        </div>
+      </div>
+
+      <div class="room-layer room-illustration-layer">
+        <img id="largeWindowBackgroundImage" class="image-room-base" src="assets/large-window/tokyo/default_day.png" alt="東京の昼背景" />
+      </div>
+
+      <div class="room-layer room-window-frame-layer" aria-hidden="true">
+        <div class="room-window-glass"></div>
+        <div class="room-window-shine shine-a"></div>
+        <div class="room-window-shine shine-b"></div>
+      </div>
+
+      <div class="image-room-status">
+        <span id="windowModeCityText">TOKYO ROOM</span>
+        <strong id="windowModeWeatherText">CLEAR</strong>
+      </div>
+    </div>
+  </section>
+
+
+  <main class="terminal-app position-layout-site">
+<section class="position-dashboard">
+      <section class="position-city console-card">
+        <div class="console-topbar">
+          <span>city/select</span>
+          <span>都市選択ボタン</span>
+        </div>
+        <div class="position-city-body">
+          <div class="mini-status-row">
+            <span class="status-chip" id="connectionStatus">STANDBY</span>
+            <span class="status-chip" id="statusText">system boot / waiting data...</span>
+          </div>
+          <label id="citySelectLabel" for="customCitySelectButton">TARGET CITY</label>
+          <div class="custom-city-select" id="customCitySelect">
+            <button
+              id="customCitySelectButton"
+              class="custom-city-select-button"
+              type="button"
+              aria-haspopup="listbox"
+              aria-expanded="false"
+              aria-labelledby="citySelectLabel customCitySelectName">
+              <span class="custom-city-icon" id="customCitySelectIcon" aria-hidden="true">🏙</span>
+              <span class="custom-city-text">
+                <strong id="customCitySelectName">東京 / 日本</strong>
+                <small id="customCitySelectMeta">urban weather scene</small>
+              </span>
+              <span class="custom-city-arrow" aria-hidden="true">▾</span>
+            </button>
+            <div
+              id="customCitySelectMenu"
+              class="custom-city-select-menu"
+              role="listbox"
+              aria-labelledby="citySelectLabel">
+            </div>
+          </div>
+          <select id="citySelect" class="compat-hidden" aria-hidden="true" tabindex="-1"></select>
+          <button id="reloadButton" type="button">RUN WEATHER CHECK</button>
+          <ul id="cityList" class="compat-hidden" aria-hidden="true"></ul>
+        </div>
+      </section>
+
+      <section class="position-window console-card">
+        <div class="console-topbar">
+          <span>view/small_window</span>
+          <span>小＿窓枠</span>
+        </div>
+        <div class="scene-window" id="sceneWindow">
+          <div class="scene-sky"></div>
+          <div class="scene-sun"></div>
+          <div class="scene-moon"></div>
+
+          <div class="scene-stars">
+            <span></span><span></span><span></span><span></span><span></span>
+          </div>
+
+          <div class="scene-cloud scene-cloud-one"></div>
+          <div class="scene-cloud scene-cloud-two"></div>
+          <div class="scene-cloud scene-cloud-three"></div>
+
+          <div class="scene-landscape scene-rural-layer"></div>
+          <div class="scene-landscape scene-urban-layer"></div>
+          <div class="scene-weather-haze"></div>
+
+          <div class="scene-rain scene-rain-one"></div>
+          <div class="scene-rain scene-rain-two"></div>
+          <div class="scene-rain scene-rain-three"></div>
+          <div class="scene-rain scene-rain-four"></div>
+          <div class="scene-rain scene-rain-five"></div>
+
+          <div class="scene-snow scene-snow-one"></div>
+          <div class="scene-snow scene-snow-two"></div>
+          <div class="scene-snow scene-snow-three"></div>
+          <div class="scene-snow scene-snow-four"></div>
+          <div class="scene-snow scene-snow-five"></div>
+
+          <div class="scene-lightning"></div>
+          <div class="scene-glass"></div>
+          <div class="scene-frame-horizontal"></div>
+          <div class="scene-frame-vertical"></div>
+
+          <div class="scene-code">weather view</div>
+          <pre id="asciiArt" class="compat-hidden" aria-hidden="true"></pre>
+        </div>
+      </section>
+
+      <section class="position-weather console-card main-console theme-clear" id="weatherTheme">
+        <div class="console-topbar">
+          <span>weather/current</span>
+          <span>天気情報</span>
+        </div>
+
+        <div class="weather-info-stack">
+          <div class="weather-main">
+            <span class="city-label">SELECTED AREA</span>
+            <h2 id="cityName">--</h2>
+            <p id="weatherName">--</p>
+            <div class="temperature-line">
+              <strong id="temperature">--</strong>
+              <span>°C</span>
+            </div>
+          </div>
+
+          <div class="metrics">
+            <article class="metric-card">
+              <span class="metric-label">APPARENT</span>
+              <strong id="apparentTemp">--</strong>
+            </article>
+            <article class="metric-card">
+              <span class="metric-label">HUMIDITY</span>
+              <strong id="humidity">--</strong>
+            </article>
+            <article class="metric-card">
+              <span class="metric-label">PRECIP</span>
+              <strong id="precipitation">--</strong>
+            </article>
+            <article class="metric-card">
+              <span class="metric-label">WIND</span>
+              <strong id="windSpeed">--</strong>
+            </article>
+          </div>
+
+          <div class="character-console">
+            <div class="pet-icon" id="petFace">☀️</div>
+            <p class="pet-message" id="petMessage">都市を選択して天気を取得してください。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="position-forecast forecast-console">
+        <div class="console-topbar">
+          <span>weather/hourly_forecast</span>
+          <span>天気予報の一覧</span>
+        </div>
+        <div class="hourly-list" id="hourlyList"></div>
+      </section>
+    </section>
+  </main>
+  <div id="appMenuLayer" class="app-menu-layer">
+    <button id="floatingMenuButton" class="floating-menu-button" type="button" aria-label="メニューを開く">
+      MENU
+    </button>
+
+    <div class="drawer-backdrop" id="musicDrawerBackdrop"></div>
+
+    <aside class="music-drawer" id="musicDrawer" aria-hidden="true">
+      <div class="drawer-header">
+        <div>
+          <p class="small-label">WEATHERSPOT MENU</p>
+          <h2>操作メニュー</h2>
+        </div>
+        <button id="closeMusicDrawerButton" class="drawer-close-button" type="button">×</button>
+      </div>
+
+      <div class="drawer-content">
+
+        <section class="drawer-panel">
+          <div class="console-topbar">
+            <span>view/window_mode</span>
+            <span>display setting</span>
+          </div>
+
+          <div class="drawer-panel-body">
+            <p class="small-label">VIEW MODE</p>
+            <p class="drawer-description">
+              窓枠モードをONにすると、都市情報や数値表示を隠して、窓枠の景色だけを大きく表示します。
+            </p>
+            <button id="windowOnlyModeButton" type="button">窓枠モード: OFF</button>
+          </div>
+        </section>
+        <section class="drawer-panel music-user-panel">
+          <div class="console-topbar">
+            <span>spotify/weather_bgm</span>
+            <span id="spotifyStatus">not connected</span>
+          </div>
+
+          <div class="drawer-panel-body">
+            <p class="small-label">MUSIC</p>
+            <p class="drawer-description">
+              Spotifyにログインすると、現在の天気に合わせたBGMを再生できます。
+              Client IDやRedirect URIなどの開発者向け設定は画面に表示しません。
+            </p>
+
+            <div class="music-now drawer-now">
+              <span>WEATHER BGM MODE</span>
+              <strong id="drawerMusicModeText">--</strong>
+              <strong id="musicModeText" class="visually-hidden">--</strong>
+            </div>
+
+            <div class="compact-controls music-main-controls">
+              <button id="spotifyLoginButton" type="button">Spotifyでログイン</button>
+              <button id="playWeatherBgmButton" type="button">天気BGMを再生</button>
+              <button id="pauseSpotifyButton" type="button">停止</button>
+              <button id="resumeSpotifyButton" type="button">再開</button>
+              <button id="previousTrackButton" type="button">前へ</button>
+              <button id="nextTrackButton" type="button">次へ</button>
+              <button id="repeatModeButton" type="button">ループ: OFF</button>
+              <button id="shuffleButton" type="button">シャッフル: OFF</button>
+              <button id="spotifyLogoutButton" type="button">ログアウト</button>
+            </div>
+
+            <label class="check-row">
+              <input id="autoMusicSwitch" type="checkbox" />
+              <span>天気更新時にBGMを自動切り替えする</span>
+            </label>
+
+            <div class="spotify-note">
+              <p>&gt; ユーザー操作: Spotifyログイン → 天気BGMを再生</p>
+              <p>&gt; プレイリスト変更と窓枠モードはMENU内に残しています</p>
+              <p>&gt; 再生制御はSpotify Premiumが必要になる場合があります</p>
+            </div>
+
+            <pre id="spotifyLog">&gt; spotify user panel initialized
+&gt; waiting for login...</pre>
+          </div>
+        </section>
+
+        <section class="drawer-panel">
+          <div class="console-topbar">
+            <span>spotify/weather_playlist_settings</span>
+            <span>custom playlist URL</span>
+          </div>
+
+          <div class="drawer-panel-body">
+            <p class="small-label">CUSTOM SETTINGS</p>
+            <p class="drawer-description">
+              天気別にSpotifyプレイリストURLを設定できます。空欄で保存すると初期プレイリストを使用します。
+            </p>
+
+            <label for="playlistClear">晴れ CLEAR</label>
+            <input id="playlistClear" type="text" placeholder="https://open.spotify.com/playlist/..." />
+
+            <label for="playlistCloudy">曇り CLOUDY</label>
+            <input id="playlistCloudy" type="text" placeholder="https://open.spotify.com/playlist/..." />
+
+            <label for="playlistRain">雨 RAIN</label>
+            <input id="playlistRain" type="text" placeholder="https://open.spotify.com/playlist/..." />
+
+            <label for="playlistSnow">雪 SNOW</label>
+            <input id="playlistSnow" type="text" placeholder="https://open.spotify.com/playlist/..." />
+
+            <label for="playlistStorm">雷雨 STORM</label>
+            <input id="playlistStorm" type="text" placeholder="https://open.spotify.com/playlist/..." />
+
+            <div class="button-grid two-col">
+              <button id="savePlaylistSettingsButton" type="button">PLAYLIST設定を保存</button>
+              <button id="resetPlaylistSettingsButton" type="button">初期設定に戻す</button>
+            </div>
+          </div>
+        </section>
+<section class="drawer-panel">
+          <div class="console-topbar">
+            <span>system/log</span>
+            <span>latest</span>
+          </div>
+          <pre id="systemLog">&gt; system initialized
+&gt; waiting for command...</pre>
+        </section>
+      </div>
+    </aside>
+  </div>
+
+<script src="scripts/storage.js"></script>
+<script src="scripts/weather.js"></script>
+<script src="scripts/spotify.js"></script>
+<script src="scripts/ui.js"></script>
+</body>
+</html>

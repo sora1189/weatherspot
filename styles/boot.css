@@ -1,0 +1,176 @@
+/* WeatherSpot: Boot sequence */
+
+/* 起動画面 */
+.intro-screen,
+.loading-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  display: grid;
+  place-items: center;
+  background: #02060b;
+  color: var(--text);
+}
+
+.intro-screen.is-hidden,
+.loading-screen.is-hidden {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.55s ease;
+}
+
+.loading-window {
+  width: min(880px, calc(100% - 32px));
+  height: min(520px, calc(100vh - 48px));
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  overflow: hidden;
+  background: rgba(6, 16, 28, 0.96);
+  box-shadow: 0 30px 120px rgba(0, 0, 0, 0.75);
+}
+
+.loading-topbar {
+  display: flex;
+  justify-content: space-between;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--line);
+  background: rgba(16, 27, 44, 0.9);
+  color: var(--sub);
+}
+
+#loadingCode {
+  height: calc(100% - 44px);
+  margin: 0;
+  padding: 18px;
+  overflow: hidden;
+  color: var(--accent);
+  line-height: 1.6;
+  white-space: pre-wrap;
+}
+
+/* タイトル画面をロード画面より先に見せるための制御 */
+.intro-screen {
+  z-index: 2200;
+}
+
+.loading-screen {
+  z-index: 2100;
+}
+
+.loading-screen[aria-hidden="true"] {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.loading-screen[aria-hidden="false"] {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* 起動中は本体を完全に隠し、タイトル→ロードの間に本体が一瞬見えないようにする */
+body.is-booting .terminal-app,
+body.is-booting .immersive-window-scene {
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+.intro-screen {
+  z-index: 3200;
+}
+
+.loading-screen {
+  z-index: 3100;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.55s ease;
+}
+
+.loading-screen[aria-hidden="false"] {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.intro-screen.is-hidden,
+.loading-screen.is-hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* ===== 修正版：ロード中コードを箇条書き風にしない ===== */
+#loadingCode {
+  white-space: pre;
+  list-style: none;
+  margin: 0;
+  font-family: Consolas, "Cascadia Mono", "Courier New", monospace;
+  line-height: 1.55;
+}
+
+/* ロード画面のコードを箇条書き・ログ風ではなく、コードブロックとして見せる */
+#loadingCode {
+  display: block;
+  white-space: pre;
+  list-style: none !important;
+  margin: 0;
+  padding: 0;
+  font-family: Consolas, "Cascadia Mono", "Courier New", monospace;
+  line-height: 1.55;
+}
+
+#loadingCode::before,
+#loadingCode::after,
+#loadingCode::marker {
+  content: none !important;
+}
+
+#loadingCode {
+  white-space: pre;
+  list-style: none !important;
+}
+
+/* 起動画面から移動しない事故を避ける。hidden状態を強制的に効かせる */
+.intro-screen.is-hidden,
+.loading-screen.is-hidden,
+.loading-screen[aria-hidden="true"] {
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+
+.loading-screen[aria-hidden="false"]:not(.is-hidden) {
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+body.is-booting .app-menu-layer,
+body.is-booting .floating-menu-button,
+body.is-booting .drawer-backdrop,
+body.is-booting .music-drawer {
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+
+body:not(.is-booting) .app-menu-layer {
+  visibility: visible;
+}
+
+body:not(.is-booting) .app-menu-layer .floating-menu-button {
+  visibility: visible;
+  pointer-events: auto;
+}
+
+/* タイトル・ロード画面の切り替えを確実にする */
+.intro-screen.is-hidden,
+.loading-screen.is-hidden,
+.loading-screen[aria-hidden="true"] {
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+
+.loading-screen[aria-hidden="false"]:not(.is-hidden) {
+  opacity: 1 !important;
+  visibility: visible !important;
+  pointer-events: auto !important;
+}

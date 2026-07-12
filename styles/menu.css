@@ -1,0 +1,541 @@
+/* WeatherSpot: Menu and Spotify controls */
+
+/* 5秒触らないと消える浮動メニューボタン */
+.floating-menu-button {
+  position: fixed;
+  right: 22px;
+  bottom: 22px;
+  z-index: 850;
+  width: 76px;
+  height: 76px;
+  border-radius: 50%;
+  border: 1px solid rgba(56, 242, 165, 0.55);
+  background: rgba(56, 242, 165, 0.92);
+  color: #03110b;
+  box-shadow: 0 0 34px rgba(56, 242, 165, 0.32);
+  transition: opacity 0.25s ease, transform 0.25s ease;
+}
+
+.floating-menu-button.is-idle-hidden {
+  opacity: 0;
+  transform: translateY(18px) scale(0.85);
+  pointer-events: none;
+}
+
+.side-panel,
+.main-console,
+.forecast-console,
+.spotify-api-console,
+.playlist-settings-console,
+.music-console,
+.log-console {
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: rgba(11, 19, 32, 0.94);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+
+.forecast-console,
+.spotify-api-console,
+.playlist-settings-console,
+.music-console,
+.log-console {
+  margin-top: 18px;
+}
+
+.drawer-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 900;
+  background: rgba(0, 0, 0, 0.54);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+}
+
+.drawer-backdrop.is-open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.music-drawer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  z-index: 901;
+  width: min(820px, calc(100vw - 22px));
+  height: 100vh;
+  overflow-y: auto;
+  background:
+    linear-gradient(rgba(56, 242, 165, 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(56, 242, 165, 0.035) 1px, transparent 1px),
+    rgba(8, 14, 24, 0.98);
+  background-size: 28px 28px, 28px 28px, auto;
+  border-left: 1px solid var(--line);
+  box-shadow: -22px 0 90px rgba(0, 0, 0, 0.62);
+  transform: translateX(110%);
+  transition: transform 0.24s ease;
+}
+
+.music-drawer.is-open {
+  transform: translateX(0);
+}
+
+.drawer-header {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 18px;
+  border-bottom: 1px solid var(--line);
+  background: rgba(8, 14, 24, 0.98);
+  backdrop-filter: blur(12px);
+}
+
+.drawer-header h2 {
+  margin: 0;
+  color: var(--text);
+}
+
+.drawer-close-button {
+  width: 46px;
+  height: 46px;
+  padding: 0;
+  border-radius: 50%;
+  color: var(--text);
+  background: rgba(16, 27, 44, 0.95);
+  border: 1px solid var(--line);
+  font-size: 28px;
+  line-height: 1;
+}
+
+.drawer-content {
+  display: grid;
+  gap: 16px;
+  padding: 18px;
+}
+
+.drawer-panel {
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  overflow: hidden;
+  background: rgba(11, 19, 32, 0.92);
+  box-shadow: var(--shadow);
+}
+
+.drawer-panel-body {
+  padding: 16px;
+}
+
+.drawer-description {
+  margin: 0 0 14px;
+  color: var(--sub);
+  line-height: 1.7;
+}
+
+.button-grid,
+.compact-controls {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+}
+
+.button-grid.two-col {
+  grid-template-columns: 1fr 1fr;
+}
+
+.button-grid.three-col {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.compact-controls {
+  grid-template-columns: repeat(4, 1fr);
+}
+
+.compact-controls button {
+  min-height: 44px;
+  padding: 10px 8px;
+  font-size: 14px;
+}
+
+.music-now {
+  border: 1px dashed var(--line);
+  border-radius: 12px;
+  padding: 14px;
+  margin-bottom: 14px;
+  background: rgba(6, 16, 28, 0.66);
+}
+
+.music-now span {
+  display: block;
+  margin-bottom: 8px;
+  color: var(--sub);
+  font-size: 12px;
+}
+
+.music-now strong {
+  color: var(--accent);
+  font-size: 20px;
+}
+
+.spotify-note {
+  margin-top: 14px;
+  color: var(--sub);
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.spotify-note p {
+  margin: 6px 0;
+}
+
+.check-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 14px 0;
+  color: var(--text);
+  line-height: 1.6;
+}
+
+.check-row input {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--accent);
+}
+
+#spotifyLog,
+.drawer-panel #systemLog {
+  margin: 0;
+  padding: 14px;
+  min-height: 120px;
+  color: var(--accent-2);
+  white-space: pre-wrap;
+  line-height: 1.7;
+  border: 1px dashed var(--line);
+  border-radius: 12px;
+  background: rgba(6, 16, 28, 0.72);
+}
+
+.drawer-panel #systemLog {
+  color: var(--accent);
+  border: 0;
+  border-radius: 0;
+}
+
+.spotify-player {
+  display: block;
+  border-radius: 14px;
+  border: 1px solid var(--line);
+  background: #06101c;
+}
+
+body.window-only-mode .floating-menu-button {
+  opacity: 0.58;
+}
+
+body.window-only-mode .floating-menu-button:hover {
+  opacity: 1;
+}
+
+body.window-only-mode .music-drawer,
+body.window-only-mode .drawer-backdrop {
+  z-index: 2500;
+}
+
+body.window-only-mode .floating-menu-button,
+body.window-only-mode .drawer-backdrop,
+body.window-only-mode .music-drawer {
+  pointer-events: auto;
+}
+
+body.window-only-mode .floating-menu-button,
+body.window-only-mode .music-drawer,
+body.window-only-mode .drawer-backdrop {
+  z-index: 3400 !important;
+}
+
+/* ===== 修正版：MENUはmain外なので窓枠モードでも操作可能 ===== */
+.floating-menu-button {
+  z-index: 4200 !important;
+}
+
+.drawer-backdrop {
+  z-index: 4300 !important;
+}
+
+.music-drawer {
+  z-index: 4400 !important;
+}
+
+body.window-only-mode .floating-menu-button,
+body.window-only-mode .floating-menu-button.is-idle-hidden {
+  opacity: 0.6 !important;
+  transform: none !important;
+  pointer-events: auto !important;
+}
+
+body.window-only-mode .floating-menu-button:hover {
+  opacity: 1 !important;
+}
+
+/* =========================================================
+   FINAL UI FIX
+   UI仕様書に合わせて、MENUを本体UIから独立した最前面レイヤーにする。
+   窓枠モード中でもボタンとサイドメニューを必ず操作できるようにする。
+   ========================================================= */
+
+.app-menu-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  pointer-events: none;
+}
+
+.app-menu-layer .floating-menu-button,
+.app-menu-layer .drawer-backdrop,
+.app-menu-layer .music-drawer {
+  pointer-events: auto;
+}
+
+.app-menu-layer .floating-menu-button {
+  position: fixed !important;
+  right: 22px !important;
+  bottom: 22px !important;
+  z-index: 100001 !important;
+  display: grid !important;
+  place-items: center !important;
+  visibility: visible !important;
+  opacity: 1;
+  pointer-events: auto !important;
+  user-select: none;
+  touch-action: manipulation;
+}
+
+body.window-only-mode .app-menu-layer .floating-menu-button,
+body.window-only-mode .app-menu-layer .floating-menu-button.is-idle-hidden {
+  opacity: 0.72 !important;
+  transform: none !important;
+  visibility: visible !important;
+  display: grid !important;
+  pointer-events: auto !important;
+}
+
+body.window-only-mode .app-menu-layer .floating-menu-button:hover {
+  opacity: 1 !important;
+}
+
+.app-menu-layer .drawer-backdrop {
+  z-index: 100000 !important;
+}
+
+.app-menu-layer .music-drawer {
+  z-index: 100002 !important;
+}
+
+.app-menu-layer .drawer-backdrop:not(.is-open) {
+  pointer-events: none !important;
+}
+
+.app-menu-layer .drawer-backdrop.is-open {
+  pointer-events: auto !important;
+}
+
+body.window-only-mode .app-menu-layer {
+  pointer-events: none !important;
+}
+
+body.window-only-mode .app-menu-layer .floating-menu-button,
+body.window-only-mode .app-menu-layer .drawer-backdrop.is-open,
+body.window-only-mode .app-menu-layer .music-drawer.is-open {
+  pointer-events: auto !important;
+}
+
+.app-menu-layer .floating-menu-button {
+  top: max(24px, 2.8vh) !important;
+  right: max(22px, 2vw) !important;
+  bottom: auto !important;
+  width: 104px !important;
+  height: 68px !important;
+}
+
+.app-menu-layer .floating-menu-button span {
+  font-weight: 900;
+}
+
+.app-menu-layer .floating-menu-button small {
+  font-size: 10px;
+  opacity: 0.72;
+}
+
+.app-menu-layer .floating-menu-button {
+  top: 18px !important;
+  right: 18px !important;
+}
+
+.app-menu-layer .floating-menu-button {
+  top: 12px !important;
+  right: 12px !important;
+  width: 64px !important;
+  height: 64px !important;
+  font-size: 16px !important;
+  box-shadow: 0 0 28px rgba(56, 242, 165, 0.22) !important;
+}
+
+.console-card,
+.position-city,
+.position-window,
+.position-weather,
+.position-forecast,
+.position-weather .weather-main,
+.position-weather .character-console,
+.position-weather .metric-card,
+.position-forecast .hour-card,
+.scene-window,
+.immersive-window-shell,
+.spotify-drawer,
+.menu-panel,
+.intro-panel,
+.loading-panel {
+  border-radius: 0 !important;
+  border: 3px solid var(--pixel-line-dark) !important;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.06)),
+    var(--pixel-panel) !important;
+  box-shadow:
+    0 0 0 2px rgba(6, 23, 33, 0.9),
+    6px 6px 0 0 rgba(3, 16, 25, 0.85),
+    inset 0 0 0 1px rgba(115, 255, 220, 0.06) !important;
+}
+
+h1, h2, h3, h4,
+.city-label,
+.console-topbar,
+.position-city-body label,
+.metric-label,
+.hour-time,
+.status-chip,
+.scene-code,
+button,
+select,
+.floating-menu-button {
+  font-family: "MS Gothic", "Courier New", monospace !important;
+  text-shadow: 1px 1px 0 rgba(0,0,0,0.45);
+}
+
+.position-city-body select,
+.position-city-body button,
+button,
+.floating-menu-button,
+.spotify-action,
+.menu-button,
+.menu-panel button,
+.menu-panel select,
+.menu-panel input {
+  border-radius: 0 !important;
+  border: 3px solid var(--pixel-line-dark) !important;
+  background:
+    linear-gradient(180deg, #49f2b2 0%, #31d39b 52%, #24b987 52%, #19a775 100%) !important;
+  color: #042116 !important;
+  box-shadow:
+    0 0 0 2px rgba(3, 16, 25, 0.85),
+    4px 4px 0 rgba(3, 16, 25, 0.75) !important;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-weight: 700 !important;
+}
+
+.position-city-body button:hover,
+button:hover,
+.floating-menu-button:hover {
+  filter: brightness(1.05);
+}
+
+.position-city-body button:active,
+button:active,
+.floating-menu-button:active {
+  transform: translate(2px, 2px) !important;
+  box-shadow:
+    0 0 0 2px rgba(3, 16, 25, 0.85),
+    2px 2px 0 rgba(3, 16, 25, 0.75) !important;
+}
+
+.floating-menu-button {
+  width: 72px !important;
+  height: 72px !important;
+  border-radius: 0 !important;
+  font-size: 18px !important;
+}
+
+/* =========================================================
+   PUBLIC SPOTIFY MENU
+   一般ユーザー向けのSpotify操作パネル
+   ========================================================= */
+
+.music-user-panel .drawer-description {
+  color: #c8f1ff !important;
+}
+
+.music-main-controls {
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+}
+
+.music-main-controls #spotifyLoginButton,
+.music-main-controls #playWeatherBgmButton {
+  grid-column: span 2;
+  min-height: 48px;
+  font-size: 15px !important;
+}
+
+.music-main-controls #spotifyLoginButton {
+  background:
+    linear-gradient(180deg, #7cf7c8 0%, #42e3a8 52%, #2fc690 52%, #19966f 100%) !important;
+}
+
+.music-main-controls #playWeatherBgmButton {
+  background:
+    linear-gradient(180deg, #ffe285 0%, #ffd35a 52%, #efb83f 52%, #c8871f 100%) !important;
+  color: #231600 !important;
+}
+
+.music-main-controls #spotifyLogoutButton {
+  grid-column: span 2;
+}
+
+.spotify-note {
+  border-radius: 0 !important;
+  border: 2px solid rgba(57, 215, 162, 0.25) !important;
+  background: rgba(6, 18, 29, 0.72) !important;
+  padding: 10px 12px;
+}
+
+.spotify-note p {
+  margin: 4px 0;
+  color: #9fd9e7 !important;
+}
+
+/* =========================================================
+   MENU AUTO HIDE FIX
+   5秒間操作がない場合、MENUボタンを完全に非表示にする。
+   マウス移動・クリック・タップ・キー入力・スクロールで再表示。
+   ========================================================= */
+
+.app-menu-layer .floating-menu-button.is-idle-hidden,
+body.window-only-mode .app-menu-layer .floating-menu-button.is-idle-hidden {
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+  transform: translateY(18px) scale(0.85) !important;
+}
+
+/* 表示中の復帰アニメーション */
+.app-menu-layer .floating-menu-button {
+  transition:
+    opacity 0.25s ease,
+    visibility 0.25s ease,
+    transform 0.25s ease !important;
+}

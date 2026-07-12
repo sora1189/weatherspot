@@ -1,0 +1,2641 @@
+/* WeatherSpot: Window and weather scenes */
+
+/* 簡易ドット絵の窓枠表示 */
+.scene-window {
+  position: relative;
+  min-height: 300px;
+  border: 10px solid rgba(213, 243, 255, 0.14);
+  border-radius: 20px;
+  overflow: hidden;
+  background: #10243a;
+  image-rendering: pixelated;
+  box-shadow: inset 0 0 0 1px rgba(213, 243, 255, 0.2), 0 0 34px rgba(51, 191, 255, 0.12);
+}
+
+.scene-window * {
+  image-rendering: pixelated;
+}
+
+.scene-sky {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, #7cc7ff 0 58%, #b9ecff 58% 100%);
+  transition: background 0.4s ease;
+}
+
+.scene-window::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 11;
+  pointer-events: none;
+  background:
+    linear-gradient(rgba(255,255,255,0.08), transparent 20%),
+    repeating-linear-gradient(0deg, rgba(255,255,255,0.045) 0 2px, transparent 2px 8px);
+  mix-blend-mode: screen;
+}
+
+.scene-frame-horizontal,
+.scene-frame-vertical {
+  position: absolute;
+  z-index: 12;
+  background: rgba(21, 35, 52, 0.92);
+  box-shadow: 0 0 18px rgba(213, 243, 255, 0.08);
+}
+
+.scene-frame-horizontal {
+  left: 0;
+  top: 50%;
+  width: 100%;
+  height: 10px;
+  transform: translateY(-50%);
+}
+
+.scene-frame-vertical {
+  top: 0;
+  left: 50%;
+  width: 10px;
+  height: 100%;
+  transform: translateX(-50%);
+}
+
+.scene-glass {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  pointer-events: none;
+  background:
+    linear-gradient(120deg, transparent 0 28%, rgba(255,255,255,0.13) 29% 31%, transparent 32% 100%);
+}
+
+.scene-sun {
+  position: absolute;
+  left: 36px;
+  top: 32px;
+  width: 32px;
+  height: 32px;
+  border-radius: 0;
+  background: #ffd84d;
+  box-shadow:
+    0 0 0 8px rgba(255, 216, 77, 0.28),
+    0 0 0 18px rgba(255, 216, 77, 0.12);
+  animation: pixelPulse 2.4s steps(2, end) infinite;
+}
+
+.scene-cloud {
+  position: absolute;
+  width: 84px;
+  height: 24px;
+  border-radius: 0;
+  background: #fff7d6;
+  filter: none;
+  box-shadow:
+    16px -12px 0 #fff7d6,
+    36px -16px 0 #fff7d6,
+    56px -8px 0 #fff7d6,
+    8px 12px 0 rgba(255,255,255,0.45);
+  opacity: 0.94;
+}
+
+.scene-cloud::before,
+.scene-cloud::after {
+  content: none;
+}
+
+.scene-cloud-one {
+  left: 118px;
+  top: 64px;
+  animation: cloudSlideA 18s linear infinite;
+}
+
+.scene-cloud-two {
+  right: auto;
+  left: 238px;
+  bottom: auto;
+  top: 116px;
+  transform: scale(0.75);
+  opacity: 0.82;
+  animation: cloudSlideB 23s linear infinite;
+}
+
+.scene-hills {
+  position: absolute;
+  left: -10%;
+  right: -10%;
+  bottom: 42px;
+  height: 86px;
+  background:
+    linear-gradient(135deg, transparent 0 45%, #3d8b62 45% 57%, transparent 57%),
+    linear-gradient(225deg, transparent 0 42%, #2e774f 42% 56%, transparent 56%);
+  background-size: 210px 90px, 260px 96px;
+  background-position: 0 12px, 110px 8px;
+}
+
+.scene-city {
+  position: absolute;
+  left: 34px;
+  right: 34px;
+  bottom: 40px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-around;
+  gap: 12px;
+}
+
+.scene-city span {
+  display: block;
+  width: 34px;
+  background: #18314b;
+  box-shadow:
+    inset 6px 8px 0 rgba(255, 233, 122, 0.7),
+    inset 20px 8px 0 rgba(255, 233, 122, 0.7),
+    inset 6px 26px 0 rgba(255, 233, 122, 0.45),
+    inset 20px 26px 0 rgba(255, 233, 122, 0.45);
+}
+
+.scene-city span:nth-child(1) { height: 42px; }
+
+.scene-city span:nth-child(2) { height: 62px; }
+
+.scene-city span:nth-child(3) { height: 50px; }
+
+.scene-city span:nth-child(4) { height: 72px; }
+
+.scene-ground {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 44px;
+  background: repeating-linear-gradient(90deg, #2e774f 0 18px, #286846 18px 36px);
+}
+
+.scene-rain {
+  position: absolute;
+  display: none;
+  width: 4px;
+  height: 20px;
+  border-radius: 0;
+  background: #48c7ff;
+  transform: none;
+  animation: sceneRain 0.58s linear infinite;
+  opacity: 0.9;
+}
+
+.scene-rain-one { left: 18%; top: 28%; }
+
+.scene-rain-two { left: 36%; top: 18%; animation-delay: 0.12s; }
+
+.scene-rain-three { left: 53%; top: 32%; animation-delay: 0.24s; }
+
+.scene-rain-four { left: 68%; top: 22%; animation-delay: 0.36s; }
+
+.scene-rain-five { left: 82%; top: 30%; animation-delay: 0.48s; }
+
+.scene-snow {
+  position: absolute;
+  display: none;
+  width: 8px;
+  height: 8px;
+  background: #fff;
+  color: transparent;
+  font-size: 0;
+  animation: sceneSnow 3.8s linear infinite;
+}
+
+.scene-snow-one { left: 16%; top: 14%; }
+
+.scene-snow-two { left: 34%; top: 28%; animation-delay: 0.6s; }
+
+.scene-snow-three { left: 54%; top: 18%; animation-delay: 1.1s; }
+
+.scene-snow-four { left: 70%; top: 34%; animation-delay: 1.7s; }
+
+.scene-snow-five { left: 86%; top: 22%; animation-delay: 2.2s; }
+
+.scene-lightning {
+  position: absolute;
+  display: none;
+  left: 60%;
+  top: 70px;
+  width: 20px;
+  height: 84px;
+  transform: none;
+  font-size: 0;
+  color: transparent;
+  background: #ffed4d;
+  clip-path: polygon(34% 0, 100% 0, 62% 42%, 100% 42%, 18% 100%, 44% 54%, 0 54%);
+  filter: drop-shadow(0 0 12px rgba(255, 237, 77, 0.85));
+  animation: lightningFlash 2.6s steps(2, end) infinite;
+}
+
+.scene-code {
+  position: absolute;
+  left: 14px;
+  bottom: 12px;
+  z-index: 13;
+  margin: 0;
+  padding: 8px 10px;
+  max-width: calc(100% - 28px);
+  border-radius: 8px;
+  background: rgba(5, 11, 18, 0.42);
+  color: rgba(213, 243, 255, 0.64);
+  font-size: 11px;
+  line-height: 1.28;
+  white-space: pre-wrap;
+}
+
+.scene-window.theme-clear .scene-sky {
+  background: linear-gradient(180deg, #64c8ff 0 58%, #bdf1ff 58% 100%);
+}
+
+.scene-window.theme-clear .scene-cloud-two {
+  opacity: 0.38;
+}
+
+.scene-window.theme-cloudy .scene-sky {
+  background: linear-gradient(180deg, #8c9ead 0 58%, #becbd2 58% 100%);
+}
+
+.scene-window.theme-cloudy .scene-sun {
+  opacity: 0.32;
+}
+
+.scene-window.theme-cloudy .scene-cloud {
+  background: #d4d9dd;
+  box-shadow:
+    16px -12px 0 #d4d9dd,
+    36px -16px 0 #c3cbd1,
+    56px -8px 0 #d4d9dd,
+    8px 12px 0 rgba(255,255,255,0.28);
+}
+
+.scene-window.theme-rain .scene-sky {
+  background: linear-gradient(180deg, #4e6f86 0 58%, #7f96a4 58% 100%);
+}
+
+.scene-window.theme-rain .scene-sun {
+  display: none;
+}
+
+.scene-window.theme-rain .scene-rain {
+  display: block;
+}
+
+.scene-window.theme-rain .scene-cloud {
+  background: #5d6872;
+  box-shadow:
+    16px -12px 0 #5d6872,
+    36px -16px 0 #4e5963,
+    56px -8px 0 #5d6872,
+    8px 12px 0 rgba(0,0,0,0.15);
+}
+
+.scene-window.theme-snow .scene-sky {
+  background: linear-gradient(180deg, #b9d9ed 0 58%, #eef9ff 58% 100%);
+}
+
+.scene-window.theme-snow .scene-snow {
+  display: block;
+}
+
+.scene-window.theme-snow .scene-ground {
+  background: repeating-linear-gradient(90deg, #eaf8ff 0 18px, #d5efff 18px 36px);
+}
+
+.scene-window.theme-snow .scene-hills {
+  opacity: 0.65;
+  filter: saturate(0.55) brightness(1.15);
+}
+
+.scene-window.theme-storm .scene-sky,
+.scene-window.theme-error .scene-sky {
+  background: linear-gradient(180deg, #1a2636 0 58%, #35465a 58% 100%);
+}
+
+.scene-window.theme-storm .scene-sun,
+.scene-window.theme-error .scene-sun {
+  display: none;
+}
+
+.scene-window.theme-storm .scene-rain,
+.scene-window.theme-storm .scene-lightning,
+.scene-window.theme-error .scene-lightning {
+  display: block;
+}
+
+.scene-window.theme-storm .scene-cloud,
+.scene-window.theme-error .scene-cloud {
+  background: #2f3946;
+  box-shadow:
+    16px -12px 0 #2f3946,
+    36px -16px 0 #25303b,
+    56px -8px 0 #2f3946,
+    8px 12px 0 rgba(0,0,0,0.24);
+}
+
+body.window-only-mode .scene-window {
+  width: min(96vw, 1320px);
+  height: min(78vh, 760px);
+  min-height: unset;
+  border-width: clamp(10px, 1.4vw, 22px);
+  border-radius: clamp(18px, 2.2vw, 38px);
+  box-shadow:
+    inset 0 0 0 1px rgba(213, 243, 255, 0.28),
+    0 0 44px rgba(51, 191, 255, 0.24),
+    0 30px 110px rgba(0, 0, 0, 0.62);
+}
+
+body.window-only-mode .scene-code {
+  display: none;
+}
+
+/* 通常画面の小さい窓と、窓枠モード用の大きい窓は別物として扱う */
+.immersive-window-scene {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 50% 30%, rgba(55, 91, 118, 0.28), transparent 42%),
+    linear-gradient(180deg, #070b12 0%, #101827 58%, #080b12 100%);
+  color: var(--text);
+}
+
+body.window-only-mode .immersive-window-scene {
+  display: grid;
+  place-items: center;
+}
+
+.room-ambient {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 50% 52%, rgba(101, 159, 202, 0.15), transparent 45%),
+    radial-gradient(circle at 50% 95%, rgba(0, 0, 0, 0.42), transparent 38%);
+  z-index: -2;
+}
+
+.room-side-shadow {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 18%;
+  background: linear-gradient(90deg, rgba(0,0,0,0.68), transparent);
+  z-index: -1;
+}
+
+.room-side-shadow.right {
+  right: 0;
+  transform: scaleX(-1);
+}
+
+.room-side-shadow.left {
+  left: 0;
+}
+
+.immersive-window-frame {
+  position: relative;
+  width: min(86vw, 1120px);
+  height: min(68vh, 620px);
+  padding: clamp(12px, 1.5vw, 24px);
+  border-radius: clamp(18px, 2vw, 34px);
+  background:
+    linear-gradient(145deg, #1b2a3a, #0b1320 45%, #26384d);
+  border: clamp(8px, 1.1vw, 18px) solid #20334a;
+  box-shadow:
+    inset 0 0 0 3px rgba(255,255,255,0.05),
+    inset 0 0 22px rgba(255,255,255,0.08),
+    0 28px 90px rgba(0, 0, 0, 0.65),
+    0 0 70px rgba(51, 191, 255, 0.14);
+}
+
+.immersive-window-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  border-radius: clamp(10px, 1.2vw, 22px);
+  background: #83cfff;
+  box-shadow:
+    inset 0 0 0 2px rgba(255,255,255,0.08),
+    inset 0 0 55px rgba(255,255,255,0.08);
+  image-rendering: pixelated;
+}
+
+.immersive-window-inner * {
+  image-rendering: pixelated;
+}
+
+.immersive-window-scene.theme-clear .immersive-sky {
+  background: linear-gradient(180deg, #5fc7ff 0 56%, #c8f4ff 56% 100%);
+}
+
+.immersive-window-scene.theme-clear .immersive-cloud.cloud-c {
+  opacity: 0.22;
+}
+
+.immersive-window-scene.theme-cloudy .immersive-sky {
+  background: linear-gradient(180deg, #8798aa 0 56%, #bcc8d2 56% 100%);
+}
+
+.immersive-window-scene.theme-cloudy .immersive-sun {
+  opacity: 0.28;
+}
+
+.immersive-window-scene.theme-cloudy .immersive-cloud {
+  background: #d0d6dc;
+  box-shadow:
+    clamp(18px, 2.2vw, 34px) clamp(-14px, -1.6vw, -22px) 0 #d0d6dc,
+    clamp(42px, 5vw, 72px) clamp(-20px, -2vw, -34px) 0 #c0c8cf,
+    clamp(72px, 8vw, 118px) clamp(-8px, -0.8vw, -14px) 0 #d0d6dc,
+    0 clamp(12px, 1.2vw, 20px) 0 rgba(255,255,255,0.24);
+}
+
+.immersive-window-scene.theme-rain .immersive-sky {
+  background: linear-gradient(180deg, #3f647d 0 56%, #7992a2 56% 100%);
+}
+
+.immersive-window-scene.theme-rain .immersive-sun {
+  display: none;
+}
+
+.immersive-window-scene.theme-rain .immersive-rain {
+  display: block;
+}
+
+.immersive-window-scene.theme-rain .immersive-cloud {
+  background: #596674;
+  box-shadow:
+    clamp(18px, 2.2vw, 34px) clamp(-14px, -1.6vw, -22px) 0 #596674,
+    clamp(42px, 5vw, 72px) clamp(-20px, -2vw, -34px) 0 #495562,
+    clamp(72px, 8vw, 118px) clamp(-8px, -0.8vw, -14px) 0 #596674,
+    0 clamp(12px, 1.2vw, 20px) 0 rgba(0,0,0,0.16);
+}
+
+.immersive-window-scene.theme-snow .immersive-sky {
+  background: linear-gradient(180deg, #bdd9ed 0 56%, #eef9ff 56% 100%);
+}
+
+.immersive-window-scene.theme-snow .immersive-snow {
+  display: block;
+}
+
+.immersive-window-scene.theme-snow .immersive-ground {
+  background: repeating-linear-gradient(90deg, #ebf8ff 0 28px, #d8efff 28px 56px);
+}
+
+.immersive-window-scene.theme-snow .immersive-near-hills,
+.immersive-window-scene.theme-snow .immersive-far-mountains {
+  filter: saturate(0.45) brightness(1.18);
+  opacity: 0.66;
+}
+
+.immersive-window-scene.theme-storm .immersive-sky,
+.immersive-window-scene.theme-error .immersive-sky {
+  background: linear-gradient(180deg, #152131 0 56%, #334558 56% 100%);
+}
+
+.immersive-window-scene.theme-storm .immersive-sun,
+.immersive-window-scene.theme-error .immersive-sun {
+  display: none;
+}
+
+.immersive-window-scene.theme-storm .immersive-rain,
+.immersive-window-scene.theme-storm .immersive-lightning,
+.immersive-window-scene.theme-error .immersive-lightning {
+  display: block;
+}
+
+.immersive-window-scene.theme-storm .immersive-cloud,
+.immersive-window-scene.theme-error .immersive-cloud {
+  background: #2c3644;
+  box-shadow:
+    clamp(18px, 2.2vw, 34px) clamp(-14px, -1.6vw, -22px) 0 #2c3644,
+    clamp(42px, 5vw, 72px) clamp(-20px, -2vw, -34px) 0 #222b36,
+    clamp(72px, 8vw, 118px) clamp(-8px, -0.8vw, -14px) 0 #2c3644,
+    0 clamp(12px, 1.2vw, 20px) 0 rgba(0,0,0,0.22);
+}
+
+/* 画像添付版の窓枠モード：添付画像を元にした専用ルームシーン */
+body.window-only-mode .immersive-window-scene {
+  display: grid !important;
+  place-items: center !important;
+  background:
+    radial-gradient(circle at 50% 35%, rgba(255, 206, 130, 0.16), transparent 42%),
+    linear-gradient(180deg, #080b12 0%, #151b25 100%) !important;
+}
+
+.image-room-scene {
+  position: relative;
+  width: min(96vw, 1440px);
+  aspect-ratio: 4 / 3;
+  max-height: 92vh;
+  overflow: hidden;
+  border-radius: clamp(14px, 1.8vw, 30px);
+  border: clamp(8px, 1vw, 16px) solid #1c2b3a;
+  background: #101827;
+  box-shadow:
+    0 30px 110px rgba(0, 0, 0, 0.68),
+    0 0 0 1px rgba(255,255,255,0.08),
+    inset 0 0 0 2px rgba(255,255,255,0.08);
+  image-rendering: pixelated;
+}
+
+.image-room-base {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  image-rendering: pixelated;
+  transform: scale(1.005);
+  transform-origin: center;
+  filter: saturate(1.05) contrast(1.02);
+}
+
+.image-weather-tint,
+.image-weather-clouds,
+.image-weather-rain,
+.image-weather-snow,
+.image-weather-lightning,
+.image-room-glass {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.image-weather-tint {
+  z-index: 3;
+  background: transparent;
+  mix-blend-mode: multiply;
+  transition: background 0.35s ease, opacity 0.35s ease;
+}
+
+.image-room-glass {
+  z-index: 7;
+  background:
+    linear-gradient(118deg, transparent 0 30%, rgba(255,255,255,0.12) 31% 33%, transparent 34% 100%),
+    linear-gradient(72deg, transparent 0 64%, rgba(255,255,255,0.08) 65% 66%, transparent 67% 100%),
+    repeating-linear-gradient(0deg, rgba(255,255,255,0.025) 0 2px, transparent 2px 9px);
+  mix-blend-mode: screen;
+  opacity: 0.65;
+}
+
+/* 添付画像の窓の外あたりを中心に天候レイヤーを出す */
+.image-weather-clouds {
+  z-index: 4;
+  overflow: hidden;
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+
+.image-weather-clouds span {
+  position: absolute;
+  left: 46%;
+  top: 10%;
+  width: clamp(70px, 9vw, 140px);
+  height: clamp(20px, 2.6vw, 42px);
+  background: rgba(228, 234, 238, 0.88);
+  box-shadow:
+    clamp(18px, 2vw, 32px) clamp(-12px, -1.2vw, -20px) 0 rgba(228, 234, 238, 0.88),
+    clamp(48px, 5vw, 78px) clamp(-18px, -1.8vw, -28px) 0 rgba(216, 223, 229, 0.88),
+    clamp(78px, 8vw, 118px) clamp(-6px, -0.8vw, -14px) 0 rgba(228, 234, 238, 0.88);
+  animation: imageCloudMove 22s linear infinite;
+}
+
+.image-weather-clouds span:nth-child(2) {
+  top: 22%;
+  left: 58%;
+  transform: scale(0.7);
+  animation-duration: 30s;
+  animation-delay: -8s;
+  opacity: 0.78;
+}
+
+.image-weather-clouds span:nth-child(3) {
+  top: 15%;
+  left: 74%;
+  transform: scale(0.5);
+  animation-duration: 36s;
+  animation-delay: -15s;
+  opacity: 0.58;
+}
+
+.image-weather-rain,
+.image-weather-snow {
+  z-index: 5;
+  overflow: hidden;
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+
+.image-weather-rain span {
+  position: absolute;
+  top: -10%;
+  left: 50%;
+  width: clamp(2px, 0.35vw, 5px);
+  height: clamp(34px, 5vw, 72px);
+  background: rgba(105, 211, 255, 0.9);
+  transform: rotate(10deg);
+  animation: imageRainFall 0.72s linear infinite;
+}
+
+.image-weather-rain span:nth-child(1) { left: 44%; animation-delay: 0s; }
+
+.image-weather-rain span:nth-child(2) { left: 50%; animation-delay: -0.1s; }
+
+.image-weather-rain span:nth-child(3) { left: 57%; animation-delay: -0.2s; }
+
+.image-weather-rain span:nth-child(4) { left: 64%; animation-delay: -0.3s; }
+
+.image-weather-rain span:nth-child(5) { left: 72%; animation-delay: -0.4s; }
+
+.image-weather-rain span:nth-child(6) { left: 80%; animation-delay: -0.5s; }
+
+.image-weather-rain span:nth-child(7) { left: 88%; animation-delay: -0.6s; }
+
+.image-weather-rain span:nth-child(8) { left: 53%; animation-delay: -0.7s; }
+
+.image-weather-rain span:nth-child(9) { left: 68%; animation-delay: -0.8s; }
+
+.image-weather-rain span:nth-child(10) { left: 84%; animation-delay: -0.9s; }
+
+.image-weather-snow span {
+  position: absolute;
+  top: -10%;
+  left: 50%;
+  width: clamp(6px, 0.9vw, 13px);
+  height: clamp(6px, 0.9vw, 13px);
+  background: rgba(255,255,255,0.96);
+  box-shadow: 0 0 8px rgba(255,255,255,0.35);
+  animation: imageSnowFall 5.2s linear infinite;
+}
+
+.image-weather-snow span:nth-child(1) { left: 43%; animation-delay: 0s; }
+
+.image-weather-snow span:nth-child(2) { left: 50%; animation-delay: -0.6s; }
+
+.image-weather-snow span:nth-child(3) { left: 58%; animation-delay: -1.2s; }
+
+.image-weather-snow span:nth-child(4) { left: 66%; animation-delay: -1.8s; }
+
+.image-weather-snow span:nth-child(5) { left: 75%; animation-delay: -2.4s; }
+
+.image-weather-snow span:nth-child(6) { left: 83%; animation-delay: -3s; }
+
+.image-weather-snow span:nth-child(7) { left: 90%; animation-delay: -3.6s; }
+
+.image-weather-snow span:nth-child(8) { left: 54%; animation-delay: -4.2s; }
+
+.image-weather-snow span:nth-child(9) { left: 70%; animation-delay: -4.8s; }
+
+.image-weather-snow span:nth-child(10) { left: 86%; animation-delay: -5.4s; }
+
+.image-weather-lightning {
+  z-index: 6;
+  display: none;
+  top: 13%;
+  left: 70%;
+  width: clamp(30px, 4vw, 58px);
+  height: clamp(110px, 15vw, 210px);
+  background: #ffed51;
+  clip-path: polygon(35% 0, 100% 0, 58% 43%, 100% 43%, 14% 100%, 42% 54%, 0 54%);
+  filter: drop-shadow(0 0 18px rgba(255, 237, 81, 0.9));
+  animation: imageLightning 2.7s steps(2, end) infinite;
+}
+
+.image-room-status {
+  position: absolute;
+  left: clamp(14px, 2vw, 28px);
+  bottom: clamp(14px, 2vw, 28px);
+  z-index: 8;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  padding: 10px 14px;
+  border: 1px solid rgba(213,243,255,0.16);
+  border-radius: 999px;
+  background: rgba(5, 11, 18, 0.48);
+  backdrop-filter: blur(8px);
+  color: rgba(213,243,255,0.92);
+  font-size: clamp(12px, 1.1vw, 16px);
+}
+
+.image-room-status span {
+  color: rgba(213,243,255,0.72);
+}
+
+.image-room-status strong {
+  color: var(--accent);
+}
+
+/* 天気ごとの画像ベース表現 */
+.immersive-window-scene.theme-clear .image-weather-tint {
+  opacity: 0;
+}
+
+.immersive-window-scene.theme-clear .image-room-base {
+  filter: saturate(1.08) contrast(1.03) brightness(1.02);
+}
+
+.immersive-window-scene.theme-cloudy .image-room-base {
+  filter: saturate(0.82) contrast(0.98) brightness(0.88);
+}
+
+.immersive-window-scene.theme-cloudy .image-weather-tint {
+  opacity: 0.38;
+  background: rgba(60, 75, 92, 0.72);
+}
+
+.immersive-window-scene.theme-cloudy .image-weather-clouds {
+  opacity: 1;
+}
+
+.immersive-window-scene.theme-rain .image-room-base {
+  filter: saturate(0.72) contrast(1.03) brightness(0.68);
+}
+
+.immersive-window-scene.theme-rain .image-weather-tint {
+  opacity: 0.58;
+  background: rgba(27, 45, 63, 0.9);
+}
+
+.immersive-window-scene.theme-rain .image-weather-clouds,
+.immersive-window-scene.theme-rain .image-weather-rain {
+  opacity: 1;
+}
+
+.immersive-window-scene.theme-snow .image-room-base {
+  filter: saturate(0.68) contrast(0.98) brightness(1.03);
+}
+
+.immersive-window-scene.theme-snow .image-weather-tint {
+  opacity: 0.34;
+  background: rgba(200, 225, 240, 0.62);
+  mix-blend-mode: screen;
+}
+
+.immersive-window-scene.theme-snow .image-weather-clouds,
+.immersive-window-scene.theme-snow .image-weather-snow {
+  opacity: 1;
+}
+
+.immersive-window-scene.theme-storm .image-room-base,
+.immersive-window-scene.theme-error .image-room-base {
+  filter: saturate(0.56) contrast(1.1) brightness(0.45);
+}
+
+.immersive-window-scene.theme-storm .image-weather-tint,
+.immersive-window-scene.theme-error .image-weather-tint {
+  opacity: 0.72;
+  background: rgba(10, 18, 31, 0.95);
+}
+
+.immersive-window-scene.theme-storm .image-weather-clouds,
+.immersive-window-scene.theme-storm .image-weather-rain,
+.immersive-window-scene.theme-error .image-weather-clouds,
+.immersive-window-scene.theme-error .image-weather-rain {
+  opacity: 1;
+}
+
+.immersive-window-scene.theme-storm .image-weather-lightning,
+.immersive-window-scene.theme-error .image-weather-lightning {
+  display: block;
+}
+
+/* ===== 窓枠モード：背景 / 天気 / 部屋前景の3レイヤー ===== */
+body.window-only-mode .immersive-window-scene {
+  display: block !important;
+  background: #080b12 !important;
+}
+
+.layered-room-scene {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  background: #080b12;
+  image-rendering: pixelated;
+  border: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+
+.room-layer {
+  position: absolute;
+  inset: 0;
+}
+
+.room-background-layer {
+  z-index: 1;
+}
+
+.room-weather-layer {
+  z-index: 2;
+  pointer-events: none;
+}
+
+.room-window-frame-layer {
+  z-index: 3;
+  pointer-events: none;
+}
+
+.image-room-base {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  image-rendering: pixelated;
+  filter: saturate(1.06) contrast(1.03);
+}
+
+/* 旧版の余分な外枠・部屋CSSは使わない */
+.image-room-scene,
+.immersive-room {
+  display: none !important;
+}
+
+/* 添付画像の大きい窓の外側に合わせたCSS天気エリア */
+.window-weather-viewport {
+  position: absolute;
+  left: 34%;
+  top: 0;
+  width: 66%;
+  height: 58%;
+  overflow: hidden;
+}
+
+.window-weather-viewport .image-weather-tint,
+.window-weather-viewport .image-weather-clouds,
+.window-weather-viewport .image-weather-rain,
+.window-weather-viewport .image-weather-snow,
+.window-weather-viewport .image-weather-lightning {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.window-weather-viewport .image-weather-tint {
+  z-index: 1;
+  background: transparent;
+  transition: background 0.35s ease, opacity 0.35s ease;
+}
+
+.window-weather-viewport .image-weather-clouds {
+  z-index: 2;
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+
+.window-weather-viewport .image-weather-clouds span {
+  position: absolute;
+  top: 18%;
+  left: -24%;
+  width: clamp(74px, 10vw, 150px);
+  height: clamp(20px, 2.7vw, 42px);
+  background: rgba(230, 236, 241, 0.9);
+  box-shadow:
+    clamp(18px, 2vw, 34px) clamp(-12px, -1.3vw, -20px) 0 rgba(230, 236, 241, 0.9),
+    clamp(48px, 5vw, 82px) clamp(-18px, -2vw, -30px) 0 rgba(214, 223, 231, 0.9),
+    clamp(78px, 8vw, 122px) clamp(-6px, -0.8vw, -14px) 0 rgba(230, 236, 241, 0.9);
+  animation: layeredCloudMove 26s linear infinite;
+}
+
+.window-weather-viewport .image-weather-clouds span:nth-child(2) {
+  top: 34%;
+  animation-duration: 34s;
+  animation-delay: -10s;
+  transform: scale(0.74);
+  opacity: 0.78;
+}
+
+.window-weather-viewport .image-weather-clouds span:nth-child(3) {
+  top: 10%;
+  animation-duration: 41s;
+  animation-delay: -20s;
+  transform: scale(0.54);
+  opacity: 0.58;
+}
+
+.window-weather-viewport .image-weather-rain,
+.window-weather-viewport .image-weather-snow {
+  z-index: 3;
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+
+.window-weather-viewport .image-weather-rain span {
+  position: absolute;
+  top: -18%;
+  width: clamp(2px, 0.35vw, 5px);
+  height: clamp(34px, 5vw, 72px);
+  background: rgba(105, 211, 255, 0.92);
+  transform: rotate(10deg);
+  animation: layeredRainFall 0.72s linear infinite;
+}
+
+.window-weather-viewport .image-weather-rain span:nth-child(1) { left: 4%; animation-delay: 0s; }
+
+.window-weather-viewport .image-weather-rain span:nth-child(2) { left: 14%; animation-delay: -0.1s; }
+
+.window-weather-viewport .image-weather-rain span:nth-child(3) { left: 25%; animation-delay: -0.2s; }
+
+.window-weather-viewport .image-weather-rain span:nth-child(4) { left: 35%; animation-delay: -0.3s; }
+
+.window-weather-viewport .image-weather-rain span:nth-child(5) { left: 46%; animation-delay: -0.4s; }
+
+.window-weather-viewport .image-weather-rain span:nth-child(6) { left: 56%; animation-delay: -0.5s; }
+
+.window-weather-viewport .image-weather-rain span:nth-child(7) { left: 67%; animation-delay: -0.6s; }
+
+.window-weather-viewport .image-weather-rain span:nth-child(8) { left: 77%; animation-delay: -0.7s; }
+
+.window-weather-viewport .image-weather-rain span:nth-child(9) { left: 88%; animation-delay: -0.8s; }
+
+.window-weather-viewport .image-weather-rain span:nth-child(10) { left: 96%; animation-delay: -0.9s; }
+
+.window-weather-viewport .image-weather-snow span {
+  position: absolute;
+  top: -14%;
+  width: clamp(6px, 0.9vw, 13px);
+  height: clamp(6px, 0.9vw, 13px);
+  background: rgba(255,255,255,0.96);
+  box-shadow: 0 0 8px rgba(255,255,255,0.35);
+  animation: layeredSnowFall 5.2s linear infinite;
+}
+
+.window-weather-viewport .image-weather-snow span:nth-child(1) { left: 5%; animation-delay: 0s; }
+
+.window-weather-viewport .image-weather-snow span:nth-child(2) { left: 16%; animation-delay: -0.6s; }
+
+.window-weather-viewport .image-weather-snow span:nth-child(3) { left: 28%; animation-delay: -1.2s; }
+
+.window-weather-viewport .image-weather-snow span:nth-child(4) { left: 39%; animation-delay: -1.8s; }
+
+.window-weather-viewport .image-weather-snow span:nth-child(5) { left: 50%; animation-delay: -2.4s; }
+
+.window-weather-viewport .image-weather-snow span:nth-child(6) { left: 61%; animation-delay: -3s; }
+
+.window-weather-viewport .image-weather-snow span:nth-child(7) { left: 72%; animation-delay: -3.6s; }
+
+.window-weather-viewport .image-weather-snow span:nth-child(8) { left: 83%; animation-delay: -4.2s; }
+
+.window-weather-viewport .image-weather-snow span:nth-child(9) { left: 91%; animation-delay: -4.8s; }
+
+.window-weather-viewport .image-weather-snow span:nth-child(10) { left: 98%; animation-delay: -5.4s; }
+
+.window-weather-viewport .image-weather-lightning {
+  z-index: 4;
+  display: none;
+  top: 12%;
+  left: 58%;
+  width: clamp(30px, 4vw, 58px);
+  height: clamp(110px, 15vw, 210px);
+  background: #ffed51;
+  clip-path: polygon(35% 0, 100% 0, 58% 43%, 100% 43%, 14% 100%, 42% 54%, 0 54%);
+  filter: drop-shadow(0 0 18px rgba(255, 237, 81, 0.9));
+  animation: layeredLightning 2.7s steps(2, end) infinite;
+}
+
+/* 3番目のレイヤー：ガラス・前景 */
+.room-window-glass {
+  position: absolute;
+  left: 34%;
+  top: 0;
+  width: 66%;
+  height: 58%;
+  background:
+    linear-gradient(118deg, transparent 0 30%, rgba(255,255,255,0.12) 31% 33%, transparent 34% 100%),
+    linear-gradient(72deg, transparent 0 64%, rgba(255,255,255,0.08) 65% 66%, transparent 67% 100%),
+    repeating-linear-gradient(0deg, rgba(255,255,255,0.025) 0 2px, transparent 2px 9px);
+  mix-blend-mode: screen;
+  opacity: 0.65;
+}
+
+.room-window-shine {
+  position: absolute;
+  left: 37%;
+  top: 4%;
+  width: 10%;
+  height: 48%;
+  transform: skewX(-18deg);
+  background: linear-gradient(180deg, rgba(255,255,255,0.18), transparent 70%);
+  opacity: 0.18;
+}
+
+.room-window-shine.shine-b {
+  left: 69%;
+  width: 7%;
+  opacity: 0.11;
+}
+
+.image-room-status {
+  position: fixed !important;
+  left: clamp(14px, 2vw, 28px) !important;
+  bottom: clamp(14px, 2vw, 28px) !important;
+  z-index: 5 !important;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  padding: 10px 14px;
+  border: 1px solid rgba(213,243,255,0.16);
+  border-radius: 999px;
+  background: rgba(5, 11, 18, 0.44);
+  backdrop-filter: blur(8px);
+  color: rgba(213,243,255,0.92);
+  font-size: clamp(12px, 1.1vw, 16px);
+}
+
+/* 天気差分 */
+.immersive-window-scene.theme-clear .image-room-base {
+  filter: saturate(1.08) contrast(1.03) brightness(1.02);
+}
+
+.immersive-window-scene.theme-clear .window-weather-viewport .image-weather-tint {
+  opacity: 0;
+}
+
+.immersive-window-scene.theme-cloudy .image-room-base {
+  filter: saturate(0.84) contrast(0.98) brightness(0.9);
+}
+
+.immersive-window-scene.theme-cloudy .window-weather-viewport .image-weather-tint {
+  opacity: 0.28;
+  background: rgba(72, 86, 102, 0.7);
+}
+
+.immersive-window-scene.theme-cloudy .window-weather-viewport .image-weather-clouds {
+  opacity: 1;
+}
+
+.immersive-window-scene.theme-rain .image-room-base {
+  filter: saturate(0.74) contrast(1.04) brightness(0.72);
+}
+
+.immersive-window-scene.theme-rain .window-weather-viewport .image-weather-tint {
+  opacity: 0.56;
+  background: rgba(24, 42, 62, 0.92);
+}
+
+.immersive-window-scene.theme-rain .window-weather-viewport .image-weather-clouds,
+.immersive-window-scene.theme-rain .window-weather-viewport .image-weather-rain {
+  opacity: 1;
+}
+
+.immersive-window-scene.theme-snow .image-room-base {
+  filter: saturate(0.7) contrast(0.98) brightness(1.04);
+}
+
+.immersive-window-scene.theme-snow .window-weather-viewport .image-weather-tint {
+  opacity: 0.28;
+  background: rgba(208, 230, 244, 0.72);
+  mix-blend-mode: screen;
+}
+
+.immersive-window-scene.theme-snow .window-weather-viewport .image-weather-clouds,
+.immersive-window-scene.theme-snow .window-weather-viewport .image-weather-snow {
+  opacity: 1;
+}
+
+.immersive-window-scene.theme-storm .image-room-base,
+.immersive-window-scene.theme-error .image-room-base {
+  filter: saturate(0.58) contrast(1.1) brightness(0.48);
+}
+
+.immersive-window-scene.theme-storm .window-weather-viewport .image-weather-tint,
+.immersive-window-scene.theme-error .window-weather-viewport .image-weather-tint {
+  opacity: 0.72;
+  background: rgba(10, 18, 31, 0.95);
+}
+
+.immersive-window-scene.theme-storm .window-weather-viewport .image-weather-clouds,
+.immersive-window-scene.theme-storm .window-weather-viewport .image-weather-rain,
+.immersive-window-scene.theme-error .window-weather-viewport .image-weather-clouds,
+.immersive-window-scene.theme-error .window-weather-viewport .image-weather-rain {
+  opacity: 1;
+}
+
+.immersive-window-scene.theme-storm .window-weather-viewport .image-weather-lightning,
+.immersive-window-scene.theme-error .window-weather-viewport .image-weather-lightning {
+  display: block;
+}
+
+/* 窓枠モードの余分な外枠を消し、3レイヤー構造を優先 */
+body.window-only-mode .immersive-window-scene {
+  display: block !important;
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 80 !important;
+  background: #080b12 !important;
+  overflow: hidden !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+
+body.window-only-mode .layered-room-scene {
+  position: fixed !important;
+  inset: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+
+body.window-only-mode .image-room-scene,
+body.window-only-mode .immersive-room {
+  display: none !important;
+}
+
+.room-background-layer {
+  z-index: 1 !important;
+}
+
+.room-weather-layer {
+  z-index: 2 !important;
+}
+
+.room-window-frame-layer {
+  z-index: 3 !important;
+}
+
+.image-room-status {
+  z-index: 4 !important;
+}
+
+/* =========================================================
+   DAY / NIGHT MODE
+   Open-Meteoのcurrent.timeを使って、選択都市の現地時間で
+   朝・昼・夕方・夜の見た目を切り替える。
+   ========================================================= */
+
+/* 通常画面の小さい窓 */
+.scene-window.time-night,
+.main-console.time-night .scene-window {
+  filter: brightness(0.66) saturate(0.82);
+}
+
+.scene-window.time-evening,
+.main-console.time-evening .scene-window {
+  filter: sepia(0.18) saturate(1.08) brightness(0.92);
+}
+
+.scene-window.time-morning,
+.main-console.time-morning .scene-window {
+  filter: saturate(1.08) brightness(1.04);
+}
+
+/* 窓枠モード：夜 */
+.immersive-window-scene.time-night .image-room-base {
+  filter: saturate(0.58) contrast(1.06) brightness(0.43) hue-rotate(8deg) !important;
+}
+
+.immersive-window-scene.time-night .window-weather-viewport::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background:
+    radial-gradient(circle at 72% 20%, rgba(221, 240, 255, 0.28), transparent 9%),
+    linear-gradient(180deg, rgba(6, 16, 38, 0.74), rgba(13, 23, 44, 0.62));
+  pointer-events: none;
+}
+
+.immersive-window-scene.time-night .image-weather-tint {
+  opacity: 0.55 !important;
+  background: rgba(5, 14, 31, 0.86) !important;
+  mix-blend-mode: multiply;
+}
+
+.immersive-window-scene.time-night .image-night-moon {
+  display: block;
+}
+
+.immersive-window-scene.time-night .image-night-stars {
+  display: block;
+}
+
+.image-night-moon {
+  position: absolute;
+  z-index: 4;
+  right: 18%;
+  top: 13%;
+  width: clamp(34px, 4.6vw, 70px);
+  height: clamp(34px, 4.6vw, 70px);
+  border-radius: 50%;
+  background: #e8f5ff;
+  box-shadow:
+    12px -4px 0 rgba(10, 24, 48, 0.95),
+    0 0 28px rgba(210, 238, 255, 0.4);
+  display: none;
+}
+
+.image-night-stars {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  display: none;
+  pointer-events: none;
+}
+
+.image-night-stars span {
+  position: absolute;
+  width: clamp(3px, 0.38vw, 6px);
+  height: clamp(3px, 0.38vw, 6px);
+  background: rgba(242, 250, 255, 0.95);
+  box-shadow: 0 0 8px rgba(242, 250, 255, 0.55);
+  animation: starBlink 2.8s steps(2, end) infinite;
+}
+
+.image-night-stars span:nth-child(1) { left: 14%; top: 18%; animation-delay: 0s; }
+
+.image-night-stars span:nth-child(2) { left: 28%; top: 30%; animation-delay: -0.4s; }
+
+.image-night-stars span:nth-child(3) { left: 44%; top: 14%; animation-delay: -0.8s; }
+
+.image-night-stars span:nth-child(4) { left: 62%; top: 34%; animation-delay: -1.2s; }
+
+.image-night-stars span:nth-child(5) { left: 80%; top: 25%; animation-delay: -1.6s; }
+
+.image-night-stars span:nth-child(6) { left: 90%; top: 42%; animation-delay: -2s; }
+
+/* 夜の天気ごとの微調整 */
+.immersive-window-scene.time-night.theme-clear .window-weather-viewport .image-weather-clouds {
+  opacity: 0.12;
+}
+
+.immersive-window-scene.time-night.theme-cloudy .window-weather-viewport .image-weather-clouds {
+  opacity: 0.8;
+}
+
+.immersive-window-scene.time-night.theme-rain .window-weather-viewport .image-weather-rain,
+.immersive-window-scene.time-night.theme-storm .window-weather-viewport .image-weather-rain {
+  opacity: 1;
+}
+
+.immersive-window-scene.time-night.theme-snow .window-weather-viewport .image-weather-snow {
+  opacity: 1;
+}
+
+/* 朝 */
+.immersive-window-scene.time-morning .image-room-base {
+  filter: saturate(1.04) contrast(1.01) brightness(0.96) sepia(0.06) !important;
+}
+
+.immersive-window-scene.time-morning .window-weather-viewport::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background: linear-gradient(180deg, rgba(255, 199, 120, 0.16), transparent 58%);
+  pointer-events: none;
+}
+
+/* 夕方 */
+.immersive-window-scene.time-evening .image-room-base {
+  filter: saturate(0.95) contrast(1.04) brightness(0.74) sepia(0.22) hue-rotate(-8deg) !important;
+}
+
+.immersive-window-scene.time-evening .window-weather-viewport::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background: linear-gradient(180deg, rgba(255, 137, 72, 0.28), rgba(35, 20, 48, 0.24));
+  pointer-events: none;
+}
+
+.immersive-window-scene.time-evening .image-weather-tint {
+  opacity: 0.18;
+  background: rgba(80, 36, 24, 0.5);
+}
+
+/* 文字ステータスも夜は控えめに */
+.immersive-window-scene.time-night .image-room-status {
+  background: rgba(2, 8, 18, 0.62);
+  border-color: rgba(180, 220, 255, 0.18);
+}
+
+/* =========================================================
+   GRADIENT MORPH
+   <div class="grad-hero">Gradient Morph</div> を活用し、
+   時間帯の変化をグラデーションでなめらかに表現する。
+   ========================================================= */
+
+.grad-hero {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  font-size: 0;
+  color: transparent;
+  opacity: var(--time-gradient-opacity, 0.22);
+  background:
+    radial-gradient(circle at var(--grad-x, 72%) var(--grad-y, 18%), var(--grad-sun, rgba(255, 225, 120, 0.42)), transparent 18%),
+    linear-gradient(135deg, var(--grad-a, rgba(104, 201, 255, 0.18)), var(--grad-b, rgba(255, 255, 255, 0.04)), var(--grad-c, rgba(255, 214, 150, 0.12)));
+  background-size: 180% 180%;
+  mix-blend-mode: var(--time-gradient-blend, screen);
+  animation: gradientMorph 13s ease-in-out infinite alternate;
+  transition:
+    opacity 0.8s ease,
+    background 1.1s ease,
+    mix-blend-mode 0.4s ease;
+}
+
+/* 背景画像より前、天気より後ろに入れるため、天気レイヤーを少し前へ */
+.room-background-layer {
+  z-index: 1 !important;
+}
+
+.grad-hero {
+  z-index: 2 !important;
+}
+
+.room-weather-layer {
+  z-index: 3 !important;
+}
+
+.room-window-frame-layer {
+  z-index: 4 !important;
+}
+
+.image-room-status {
+  z-index: 5 !important;
+}
+
+/* 朝：少し暖かい光 */
+.immersive-window-scene.time-morning,
+.main-console.time-morning {
+  --grad-x: 72%;
+  --grad-y: 20%;
+  --grad-sun: rgba(255, 205, 126, 0.48);
+  --grad-a: rgba(255, 184, 116, 0.16);
+  --grad-b: rgba(255, 228, 179, 0.12);
+  --grad-c: rgba(110, 198, 255, 0.12);
+  --time-gradient-opacity: 0.38;
+  --time-gradient-blend: screen;
+  --panel-grad-x: 78%;
+  --panel-grad-a: rgba(255, 198, 125, 0.28);
+  --panel-grad-b: rgba(255, 164, 98, 0.08);
+}
+
+/* 昼：明るく透明感のある青 */
+.immersive-window-scene.time-day,
+.main-console.time-day {
+  --grad-x: 70%;
+  --grad-y: 14%;
+  --grad-sun: rgba(255, 231, 126, 0.34);
+  --grad-a: rgba(80, 194, 255, 0.16);
+  --grad-b: rgba(255, 255, 255, 0.06);
+  --grad-c: rgba(255, 225, 150, 0.08);
+  --time-gradient-opacity: 0.22;
+  --time-gradient-blend: screen;
+  --panel-grad-x: 84%;
+  --panel-grad-a: rgba(94, 206, 255, 0.2);
+  --panel-grad-b: rgba(51, 191, 255, 0.08);
+}
+
+/* 夕方：オレンジ〜紫 */
+.immersive-window-scene.time-evening,
+.main-console.time-evening {
+  --grad-x: 68%;
+  --grad-y: 28%;
+  --grad-sun: rgba(255, 126, 82, 0.48);
+  --grad-a: rgba(255, 117, 80, 0.26);
+  --grad-b: rgba(255, 185, 102, 0.18);
+  --grad-c: rgba(72, 34, 108, 0.2);
+  --time-gradient-opacity: 0.5;
+  --time-gradient-blend: overlay;
+  --panel-grad-x: 76%;
+  --panel-grad-a: rgba(255, 134, 76, 0.3);
+  --panel-grad-b: rgba(110, 58, 150, 0.12);
+}
+
+/* 夜：青紫の暗いグラデーション */
+.immersive-window-scene.time-night,
+.main-console.time-night {
+  --grad-x: 74%;
+  --grad-y: 16%;
+  --grad-sun: rgba(160, 207, 255, 0.24);
+  --grad-a: rgba(18, 31, 74, 0.52);
+  --grad-b: rgba(8, 14, 32, 0.38);
+  --grad-c: rgba(92, 64, 140, 0.2);
+  --time-gradient-opacity: 0.64;
+  --time-gradient-blend: screen;
+  --panel-grad-x: 78%;
+  --panel-grad-a: rgba(112, 160, 255, 0.16);
+  --panel-grad-b: rgba(21, 28, 68, 0.18);
+}
+
+/* 天気が強い時はグラデーションを少し抑える */
+.immersive-window-scene.theme-rain .grad-hero {
+  opacity: calc(var(--time-gradient-opacity, 0.22) * 0.7);
+}
+
+.immersive-window-scene.theme-storm .grad-hero,
+.immersive-window-scene.theme-error .grad-hero {
+  opacity: calc(var(--time-gradient-opacity, 0.22) * 0.55);
+}
+
+.immersive-window-scene.theme-snow .grad-hero {
+  opacity: calc(var(--time-gradient-opacity, 0.22) * 0.85);
+}
+
+.position-window .scene-window {
+  margin: 14px;
+  height: auto;
+  min-height: 0;
+  border-radius: 18px;
+}
+
+.position-window .scene-window {
+  margin: 12px !important;
+  height: auto !important;
+  min-height: 0 !important;
+  max-height: none !important;
+  overflow: hidden !important;
+}
+
+.position-window .scene-window {
+  margin: 10px !important;
+  min-height: 0 !important;
+}
+
+/* =========================================================
+   MAIN SMALL WINDOW ANIMATION FIX
+   メイン画面の小窓枠に、天気と時間帯で変化するCSSアニメーションを復活。
+   ========================================================= */
+
+.position-window .scene-window {
+  position: relative !important;
+  overflow: hidden !important;
+  background: #10243a !important;
+  border: 10px solid rgba(213, 243, 255, 0.16) !important;
+  box-shadow:
+    inset 0 0 0 1px rgba(213, 243, 255, 0.22),
+    0 0 34px rgba(51, 191, 255, 0.12) !important;
+}
+
+.scene-sky,
+.scene-sun,
+.scene-moon,
+.scene-stars,
+.scene-cloud,
+.scene-hills,
+.scene-city,
+.scene-ground,
+.scene-rain,
+.scene-snow,
+.scene-lightning,
+.scene-glass,
+.scene-frame-horizontal,
+.scene-frame-vertical,
+.scene-code {
+  position: absolute;
+}
+
+.scene-sky {
+  inset: 0;
+  z-index: 1;
+  background: linear-gradient(180deg, #64c8ff 0 58%, #bdf1ff 58% 100%);
+  transition: background 0.6s ease;
+}
+
+.scene-sun {
+  z-index: 3;
+  left: 36px;
+  top: 32px;
+  width: 32px;
+  height: 32px;
+  background: #ffd84d;
+  box-shadow:
+    0 0 0 8px rgba(255, 216, 77, 0.28),
+    0 0 0 18px rgba(255, 216, 77, 0.12);
+  animation: sceneSunPulse 2.8s steps(2, end) infinite;
+}
+
+.scene-moon {
+  z-index: 3;
+  display: none;
+  right: 48px;
+  top: 38px;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: #e8f5ff;
+  box-shadow:
+    10px -4px 0 #10243a,
+    0 0 22px rgba(210, 238, 255, 0.36);
+}
+
+.scene-stars {
+  z-index: 2;
+  inset: 0;
+  display: none;
+}
+
+.scene-stars span {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  background: rgba(242, 250, 255, 0.95);
+  box-shadow: 0 0 8px rgba(242, 250, 255, 0.55);
+  animation: sceneStarBlink 2.8s steps(2, end) infinite;
+}
+
+.scene-stars span:nth-child(1) { left: 18%; top: 16%; animation-delay: 0s; }
+
+.scene-stars span:nth-child(2) { left: 32%; top: 28%; animation-delay: -0.5s; }
+
+.scene-stars span:nth-child(3) { left: 52%; top: 18%; animation-delay: -1s; }
+
+.scene-stars span:nth-child(4) { left: 70%; top: 32%; animation-delay: -1.5s; }
+
+.scene-stars span:nth-child(5) { left: 86%; top: 20%; animation-delay: -2s; }
+
+.scene-cloud {
+  z-index: 5;
+  width: 84px;
+  height: 24px;
+  background: #fff7d6;
+  box-shadow:
+    16px -12px 0 #fff7d6,
+    36px -16px 0 #fff7d6,
+    56px -8px 0 #fff7d6,
+    8px 12px 0 rgba(255,255,255,0.45);
+  opacity: 0.94;
+}
+
+.scene-cloud-one {
+  left: 118px;
+  top: 64px;
+  animation: sceneCloudSlideA 18s linear infinite;
+}
+
+.scene-cloud-two {
+  left: 238px;
+  top: 116px;
+  transform: scale(0.75);
+  opacity: 0.82;
+  animation: sceneCloudSlideB 23s linear infinite;
+}
+
+.scene-cloud-three {
+  left: -90px;
+  top: 38px;
+  transform: scale(0.58);
+  opacity: 0.45;
+  animation: sceneCloudSlideC 28s linear infinite;
+}
+
+.scene-hills {
+  z-index: 4;
+  left: -10%;
+  right: -10%;
+  bottom: 42px;
+  height: 86px;
+  background:
+    linear-gradient(135deg, transparent 0 45%, #3d8b62 45% 57%, transparent 57%),
+    linear-gradient(225deg, transparent 0 42%, #2e774f 42% 56%, transparent 56%);
+  background-size: 210px 90px, 260px 96px;
+  background-position: 0 12px, 110px 8px;
+}
+
+.scene-city {
+  z-index: 6;
+  left: 34px;
+  right: 34px;
+  bottom: 40px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-around;
+  gap: 12px;
+}
+
+.scene-city span {
+  display: block;
+  width: 34px;
+  background: #18314b;
+  box-shadow:
+    inset 6px 8px 0 rgba(255, 233, 122, 0.7),
+    inset 20px 8px 0 rgba(255, 233, 122, 0.7),
+    inset 6px 26px 0 rgba(255, 233, 122, 0.45),
+    inset 20px 26px 0 rgba(255, 233, 122, 0.45);
+}
+
+.scene-city span:nth-child(1) { height: 42px; }
+
+.scene-city span:nth-child(2) { height: 62px; }
+
+.scene-city span:nth-child(3) { height: 50px; }
+
+.scene-city span:nth-child(4) { height: 72px; }
+
+.scene-ground {
+  z-index: 7;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 44px;
+  background: repeating-linear-gradient(90deg, #2e774f 0 18px, #286846 18px 36px);
+}
+
+.scene-rain {
+  z-index: 9;
+  display: none;
+  width: 4px;
+  height: 24px;
+  background: #48c7ff;
+  animation: sceneRainFall 0.58s linear infinite;
+  opacity: 0.9;
+}
+
+.scene-rain-one { left: 18%; top: 28%; }
+
+.scene-rain-two { left: 36%; top: 18%; animation-delay: 0.12s; }
+
+.scene-rain-three { left: 53%; top: 32%; animation-delay: 0.24s; }
+
+.scene-rain-four { left: 68%; top: 22%; animation-delay: 0.36s; }
+
+.scene-rain-five { left: 82%; top: 30%; animation-delay: 0.48s; }
+
+.scene-snow {
+  z-index: 9;
+  display: none;
+  width: 8px;
+  height: 8px;
+  background: #fff;
+  animation: sceneSnowFall 3.8s linear infinite;
+}
+
+.scene-snow-one { left: 16%; top: 14%; }
+
+.scene-snow-two { left: 34%; top: 28%; animation-delay: 0.6s; }
+
+.scene-snow-three { left: 54%; top: 18%; animation-delay: 1.1s; }
+
+.scene-snow-four { left: 70%; top: 34%; animation-delay: 1.7s; }
+
+.scene-snow-five { left: 86%; top: 22%; animation-delay: 2.2s; }
+
+.scene-lightning {
+  z-index: 10;
+  display: none;
+  left: 60%;
+  top: 70px;
+  width: 20px;
+  height: 84px;
+  background: #ffed4d;
+  clip-path: polygon(34% 0, 100% 0, 62% 42%, 100% 42%, 18% 100%, 44% 54%, 0 54%);
+  filter: drop-shadow(0 0 12px rgba(255, 237, 77, 0.85));
+  animation: sceneLightningFlash 2.6s steps(2, end) infinite;
+}
+
+.scene-glass {
+  z-index: 11;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(120deg, transparent 0 28%, rgba(255,255,255,0.13) 29% 31%, transparent 32% 100%),
+    repeating-linear-gradient(0deg, rgba(255,255,255,0.045) 0 2px, transparent 2px 8px);
+  mix-blend-mode: screen;
+}
+
+.scene-frame-horizontal,
+.scene-frame-vertical {
+  z-index: 12;
+  background: rgba(21, 35, 52, 0.92);
+  box-shadow: 0 0 18px rgba(213, 243, 255, 0.08);
+}
+
+.scene-frame-horizontal {
+  left: 0;
+  top: 50%;
+  width: 100%;
+  height: 10px;
+  transform: translateY(-50%);
+}
+
+.scene-frame-vertical {
+  top: 0;
+  left: 50%;
+  width: 10px;
+  height: 100%;
+  transform: translateX(-50%);
+}
+
+.scene-code {
+  z-index: 13;
+  left: 14px;
+  bottom: 12px;
+  margin: 0;
+  padding: 8px 10px;
+  max-width: calc(100% - 28px);
+  border-radius: 8px;
+  background: rgba(5, 11, 18, 0.42);
+  color: rgba(213, 243, 255, 0.64);
+  font-size: 11px;
+  line-height: 1.28;
+}
+
+/* 天気 */
+.scene-window.theme-clear .scene-sky {
+  background: linear-gradient(180deg, #64c8ff 0 58%, #bdf1ff 58% 100%);
+}
+
+.scene-window.theme-clear .scene-cloud-two {
+  opacity: 0.38;
+}
+
+.scene-window.theme-cloudy .scene-sky {
+  background: linear-gradient(180deg, #8c9ead 0 58%, #becbd2 58% 100%);
+}
+
+.scene-window.theme-cloudy .scene-sun {
+  opacity: 0.28;
+}
+
+.scene-window.theme-cloudy .scene-cloud {
+  background: #d4d9dd;
+  box-shadow:
+    16px -12px 0 #d4d9dd,
+    36px -16px 0 #c3cbd1,
+    56px -8px 0 #d4d9dd,
+    8px 12px 0 rgba(255,255,255,0.28);
+}
+
+.scene-window.theme-rain .scene-sky {
+  background: linear-gradient(180deg, #4e6f86 0 58%, #7f96a4 58% 100%);
+}
+
+.scene-window.theme-rain .scene-sun {
+  display: none;
+}
+
+.scene-window.theme-rain .scene-rain {
+  display: block;
+}
+
+.scene-window.theme-rain .scene-cloud {
+  background: #5d6872;
+  box-shadow:
+    16px -12px 0 #5d6872,
+    36px -16px 0 #4e5963,
+    56px -8px 0 #5d6872,
+    8px 12px 0 rgba(0,0,0,0.15);
+}
+
+.scene-window.theme-snow .scene-sky {
+  background: linear-gradient(180deg, #b9d9ed 0 58%, #eef9ff 58% 100%);
+}
+
+.scene-window.theme-snow .scene-snow {
+  display: block;
+}
+
+.scene-window.theme-snow .scene-ground {
+  background: repeating-linear-gradient(90deg, #eaf8ff 0 18px, #d5efff 18px 36px);
+}
+
+.scene-window.theme-snow .scene-hills {
+  opacity: 0.65;
+  filter: saturate(0.55) brightness(1.15);
+}
+
+.scene-window.theme-storm .scene-sky,
+.scene-window.theme-error .scene-sky {
+  background: linear-gradient(180deg, #1a2636 0 58%, #35465a 58% 100%);
+}
+
+.scene-window.theme-storm .scene-sun,
+.scene-window.theme-error .scene-sun {
+  display: none;
+}
+
+.scene-window.theme-storm .scene-rain,
+.scene-window.theme-storm .scene-lightning,
+.scene-window.theme-error .scene-lightning {
+  display: block;
+}
+
+.scene-window.theme-storm .scene-cloud,
+.scene-window.theme-error .scene-cloud {
+  background: #2f3946;
+  box-shadow:
+    16px -12px 0 #2f3946,
+    36px -16px 0 #25303b,
+    56px -8px 0 #2f3946,
+    8px 12px 0 rgba(0,0,0,0.24);
+}
+
+/* 時間帯 */
+.scene-window.time-night .scene-sky {
+  background: linear-gradient(180deg, #101b38 0 58%, #253653 58% 100%);
+}
+
+.scene-window.time-night .scene-sun {
+  display: none;
+}
+
+.scene-window.time-night .scene-moon,
+.scene-window.time-night .scene-stars {
+  display: block;
+}
+
+.scene-window.time-night .scene-city span {
+  box-shadow:
+    inset 6px 8px 0 rgba(255, 233, 122, 0.68),
+    inset 20px 8px 0 rgba(255, 233, 122, 0.68),
+    inset 6px 26px 0 rgba(255, 233, 122, 0.42),
+    inset 20px 26px 0 rgba(255, 233, 122, 0.42);
+}
+
+.scene-window.time-evening .scene-sky {
+  background: linear-gradient(180deg, #ff9c6b 0 46%, #73507a 46% 100%);
+}
+
+.scene-window.time-evening .scene-sun {
+  background: #ffb35c;
+  box-shadow:
+    0 0 0 8px rgba(255, 179, 92, 0.22),
+    0 0 0 18px rgba(255, 116, 76, 0.1);
+}
+
+.scene-window.time-morning .scene-sky {
+  background: linear-gradient(180deg, #ffd49a 0 40%, #8cd4ff 40% 100%);
+}
+
+/* =========================================================
+   SMALL WINDOW IMAGE-LAYER VERSION
+   ユーザー作成の地面・建物画像を小窓用レイヤーとして使用
+   ========================================================= */
+
+.scene-landscape,
+.scene-weather-haze {
+  position: absolute;
+}
+
+.scene-landscape {
+  left: 0;
+  right: 0;
+  background-repeat: no-repeat;
+  background-position: center bottom;
+  pointer-events: none;
+  will-change: transform, filter, opacity;
+}
+
+.scene-rural-layer {
+  z-index: 4;
+  bottom: 18px;
+  height: 38%;
+  background-image: url("../assets/scenes/small_window_rural_layer.png");
+  background-size: 104% auto;
+  opacity: 0.9;
+  animation: smallWindowRuralDrift 22s ease-in-out infinite alternate;
+}
+
+.scene-urban-layer {
+  z-index: 6;
+  bottom: 0;
+  height: 46%;
+  background-image: url("../assets/scenes/small_window_urban_layer.png");
+  background-size: 102% auto;
+  opacity: 0.95;
+  animation: smallWindowUrbanDrift 30s ease-in-out infinite alternate;
+}
+
+.scene-weather-haze {
+  z-index: 8;
+  inset: auto 0 0 0;
+  height: 42%;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.00) 0%, rgba(255,255,255,0.06) 100%),
+    linear-gradient(180deg, rgba(8,16,26,0.00) 0%, rgba(8,16,26,0.10) 100%);
+  opacity: 0.35;
+  pointer-events: none;
+}
+
+/* 旧CSS図形は画像レイヤー導入後は非表示 */
+.scene-hills,
+.scene-city,
+.scene-ground {
+  display: none !important;
+}
+
+/* 小窓の雲は少し上に寄せて画像と重なりを調整 */
+.scene-cloud-one { top: 54px; }
+
+.scene-cloud-two { top: 102px; }
+
+.scene-cloud-three { top: 28px; }
+
+/* 天気・時間帯による画像レイヤーの見え方 */
+.scene-window.theme-clear .scene-rural-layer,
+.scene-window.theme-clear .scene-urban-layer {
+  filter: saturate(1.02) brightness(1.02);
+}
+
+.scene-window.theme-cloudy .scene-rural-layer,
+.scene-window.theme-cloudy .scene-urban-layer {
+  filter: saturate(0.72) brightness(0.92);
+}
+
+.scene-window.theme-cloudy .scene-weather-haze {
+  opacity: 0.55;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.02) 0%, rgba(230,236,242,0.16) 100%),
+    linear-gradient(180deg, rgba(8,16,26,0.00) 0%, rgba(8,16,26,0.18) 100%);
+}
+
+.scene-window.theme-rain .scene-rural-layer,
+.scene-window.theme-rain .scene-urban-layer {
+  filter: saturate(0.78) brightness(0.78) contrast(1.03);
+}
+
+.scene-window.theme-rain .scene-weather-haze {
+  opacity: 0.75;
+  background:
+    linear-gradient(180deg, rgba(210,225,235,0.04) 0%, rgba(135,155,170,0.20) 100%),
+    linear-gradient(180deg, rgba(8,16,26,0.00) 0%, rgba(8,16,26,0.28) 100%);
+}
+
+.scene-window.theme-snow .scene-rural-layer,
+.scene-window.theme-snow .scene-urban-layer {
+  filter: saturate(0.8) brightness(1.08);
+}
+
+.scene-window.theme-snow .scene-weather-haze {
+  opacity: 0.62;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.18) 100%),
+    linear-gradient(180deg, rgba(180,210,230,0.00) 0%, rgba(180,210,230,0.10) 100%);
+}
+
+.scene-window.theme-storm .scene-rural-layer,
+.scene-window.theme-storm .scene-urban-layer,
+.scene-window.theme-error .scene-rural-layer,
+.scene-window.theme-error .scene-urban-layer {
+  filter: saturate(0.6) brightness(0.56) contrast(1.08);
+}
+
+.scene-window.theme-storm .scene-weather-haze,
+.scene-window.theme-error .scene-weather-haze {
+  opacity: 0.82;
+  background:
+    linear-gradient(180deg, rgba(120,140,155,0.04) 0%, rgba(35,48,60,0.28) 100%),
+    linear-gradient(180deg, rgba(8,16,26,0.08) 0%, rgba(8,16,26,0.34) 100%);
+}
+
+.scene-window.time-morning .scene-rural-layer,
+.scene-window.time-morning .scene-urban-layer {
+  filter: sepia(0.08) saturate(1.03) brightness(1.02);
+}
+
+.scene-window.time-evening .scene-rural-layer,
+.scene-window.time-evening .scene-urban-layer {
+  filter: sepia(0.18) hue-rotate(-8deg) saturate(1.02) brightness(0.95);
+}
+
+.scene-window.time-evening .scene-weather-haze {
+  opacity: 0.50;
+  background:
+    linear-gradient(180deg, rgba(255,179,118,0.05) 0%, rgba(126,90,120,0.18) 100%),
+    linear-gradient(180deg, rgba(8,16,26,0.00) 0%, rgba(8,16,26,0.12) 100%);
+}
+
+.scene-window.time-night .scene-rural-layer,
+.scene-window.time-night .scene-urban-layer {
+  filter: brightness(0.54) saturate(0.86) contrast(1.03);
+}
+
+.scene-window.time-night .scene-weather-haze {
+  opacity: 0.70;
+  background:
+    linear-gradient(180deg, rgba(34,50,94,0.10) 0%, rgba(10,18,40,0.22) 100%),
+    linear-gradient(180deg, rgba(8,16,26,0.00) 0%, rgba(8,16,26,0.18) 100%);
+}
+
+/* 夜は街側レイヤーを少し明るくして窓明かり感を残す */
+.scene-window.time-night .scene-urban-layer {
+  opacity: 1;
+  filter: brightness(0.72) saturate(0.92) contrast(1.05) drop-shadow(0 0 10px rgba(255, 215, 90, 0.08));
+}
+
+/* 雨・雪は画像レイヤーの上に重ねる */
+.scene-rain,
+.scene-snow,
+.scene-lightning {
+  z-index: 9;
+}
+
+/* =========================================================
+   CITY SCENE VARIANT FIX
+   都会 / 田舎 を重ねず、選択都市に合わせて1種類だけ表示
+   ========================================================= */
+
+.scene-rural-layer,
+.scene-urban-layer {
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.35s ease, filter 0.45s ease;
+}
+
+.scene-window.scene-variant-rural .scene-rural-layer {
+  opacity: 0.98;
+  visibility: visible;
+}
+
+.scene-window.scene-variant-urban .scene-urban-layer {
+  opacity: 0.98;
+  visibility: visible;
+}
+
+/* 田舎レイヤーの見え方 */
+.scene-window.scene-variant-rural .scene-rural-layer {
+  bottom: 0;
+  height: 48%;
+  background-size: 102% auto;
+  animation-duration: 20s;
+}
+
+.scene-window.scene-variant-rural .scene-weather-haze {
+  height: 44%;
+}
+
+/* 都会レイヤーの見え方 */
+.scene-window.scene-variant-urban .scene-urban-layer {
+  bottom: 0;
+  height: 50%;
+  background-size: 103% auto;
+  animation-duration: 28s;
+}
+
+.scene-window.scene-variant-urban .scene-weather-haze {
+  height: 46%;
+}
+
+/* 都会では地平線を少し低め、田舎では空をやや広く見せる */
+.scene-window.scene-variant-rural .scene-cloud-one { top: 50px; }
+
+.scene-window.scene-variant-rural .scene-cloud-two { top: 98px; }
+
+.scene-window.scene-variant-rural .scene-cloud-three { top: 24px; }
+
+.scene-window.scene-variant-urban .scene-cloud-one { top: 44px; }
+
+.scene-window.scene-variant-urban .scene-cloud-two { top: 88px; }
+
+.scene-window.scene-variant-urban .scene-cloud-three { top: 18px; }
+
+/* テーマに応じた見え方（都市別表示にも適用） */
+.scene-window.scene-variant-rural.time-night .scene-rural-layer {
+  opacity: 1;
+}
+
+.scene-window.scene-variant-urban.time-night .scene-urban-layer {
+  opacity: 1;
+}
+
+.scene-window.scene-variant-rural.theme-snow .scene-rural-layer {
+  filter: saturate(0.82) brightness(1.10);
+}
+
+.scene-window.scene-variant-urban.theme-snow .scene-urban-layer {
+  filter: saturate(0.8) brightness(1.08);
+}
+
+/* =========================================================
+   SCENE FRAMING TUNE
+   - 都会: 建物が見えやすいように表示位置を上げる
+   - 田舎: ズーム感を弱めて少し引きで見せる
+   - どちらも上部の黒背景をマスクで薄くしてCSSの空を見せる
+   ========================================================= */
+
+.scene-landscape {
+  inset: 0 !important;
+  height: auto !important;
+  background-repeat: no-repeat !important;
+  background-position: center bottom !important;
+}
+
+.scene-rural-layer,
+.scene-urban-layer {
+  bottom: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  top: 0 !important;
+  height: auto !important;
+  -webkit-mask-image: linear-gradient(to top, rgba(0,0,0,1) 0 54%, rgba(0,0,0,0.96) 66%, rgba(0,0,0,0.45) 82%, rgba(0,0,0,0) 96%);
+  mask-image: linear-gradient(to top, rgba(0,0,0,1) 0 54%, rgba(0,0,0,0.96) 66%, rgba(0,0,0,0.45) 82%, rgba(0,0,0,0) 96%);
+}
+
+/* 田舎は少し引きで表示 */
+.scene-window.scene-variant-rural .scene-rural-layer {
+  background-size: 88% auto !important;
+  background-position: center 100% !important;
+  opacity: 1 !important;
+  animation-duration: 24s !important;
+  filter: saturate(1) brightness(0.98);
+}
+
+/* 都会は建物の位置を少し上げて見せる */
+.scene-window.scene-variant-urban .scene-urban-layer {
+  background-size: 96% auto !important;
+  background-position: center 88% !important;
+  opacity: 1 !important;
+  animation-duration: 32s !important;
+  filter: saturate(0.98) brightness(0.98) contrast(1.02);
+}
+
+/* 都会・田舎で霞レイヤーの位置も微調整 */
+.scene-window.scene-variant-rural .scene-weather-haze {
+  height: 100% !important;
+  opacity: 0.22;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.00) 0 46%, rgba(255,255,255,0.05) 70%, rgba(10,16,24,0.10) 100%),
+    linear-gradient(180deg, rgba(0,0,0,0.00) 0%, rgba(0,0,0,0.08) 100%);
+}
+
+.scene-window.scene-variant-urban .scene-weather-haze {
+  height: 100% !important;
+  opacity: 0.18;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.00) 0 42%, rgba(255,255,255,0.04) 66%, rgba(10,16,24,0.12) 100%),
+    linear-gradient(180deg, rgba(0,0,0,0.00) 0%, rgba(0,0,0,0.10) 100%);
+}
+
+/* 天候・時間帯ごとの見え方の上書き */
+.scene-window.scene-variant-urban.theme-clear .scene-urban-layer,
+.scene-window.scene-variant-rural.theme-clear .scene-rural-layer {
+  filter: saturate(1.02) brightness(1.00) contrast(1.02);
+}
+
+.scene-window.scene-variant-urban.theme-cloudy .scene-urban-layer {
+  filter: saturate(0.76) brightness(0.94) contrast(1.02);
+}
+
+.scene-window.scene-variant-rural.theme-cloudy .scene-rural-layer {
+  filter: saturate(0.78) brightness(0.95) contrast(1.01);
+}
+
+.scene-window.scene-variant-urban.theme-rain .scene-urban-layer {
+  filter: saturate(0.72) brightness(0.82) contrast(1.04);
+}
+
+.scene-window.scene-variant-rural.theme-rain .scene-rural-layer {
+  filter: saturate(0.74) brightness(0.80) contrast(1.03);
+}
+
+.scene-window.scene-variant-urban.theme-snow .scene-urban-layer {
+  filter: saturate(0.82) brightness(1.08) contrast(1.02);
+}
+
+.scene-window.scene-variant-rural.theme-snow .scene-rural-layer {
+  filter: saturate(0.84) brightness(1.10) contrast(1.02);
+}
+
+.scene-window.scene-variant-urban.theme-storm .scene-urban-layer,
+.scene-window.scene-variant-urban.theme-error .scene-urban-layer {
+  filter: saturate(0.62) brightness(0.60) contrast(1.08);
+}
+
+.scene-window.scene-variant-rural.theme-storm .scene-rural-layer,
+.scene-window.scene-variant-rural.theme-error .scene-rural-layer {
+  filter: saturate(0.64) brightness(0.58) contrast(1.06);
+}
+
+.scene-window.scene-variant-urban.time-morning .scene-urban-layer,
+.scene-window.scene-variant-rural.time-morning .scene-rural-layer {
+  filter: sepia(0.06) saturate(1.03) brightness(1.02);
+}
+
+.scene-window.scene-variant-urban.time-evening .scene-urban-layer,
+.scene-window.scene-variant-rural.time-evening .scene-rural-layer {
+  filter: sepia(0.16) hue-rotate(-8deg) saturate(1.02) brightness(0.95);
+}
+
+.scene-window.scene-variant-urban.time-night .scene-urban-layer {
+  background-size: 94% auto !important;
+  background-position: center 90% !important;
+  filter: brightness(0.76) saturate(0.92) contrast(1.05) drop-shadow(0 0 8px rgba(255, 214, 92, 0.08));
+}
+
+.scene-window.scene-variant-rural.time-night .scene-rural-layer {
+  background-size: 86% auto !important;
+  background-position: center 100% !important;
+  filter: brightness(0.70) saturate(0.90) contrast(1.04) drop-shadow(0 0 8px rgba(255, 214, 92, 0.06));
+}
+
+/* =========================================================
+   URBAN REPEAT / WIDER FRAMING FIX
+   - 都会背景を少し引きで表示
+   - 横幅が足りない場合は同じ画像を横に連続表示
+   ========================================================= */
+
+.scene-window.scene-variant-urban .scene-urban-layer {
+  background-repeat: repeat-x !important;
+  background-size: auto 56% !important;
+  background-position: left 92% bottom 0 !important;
+  opacity: 1 !important;
+}
+
+/* 夜も同じ考え方で少し引きにする */
+.scene-window.scene-variant-urban.time-night .scene-urban-layer {
+  background-repeat: repeat-x !important;
+  background-size: auto 54% !important;
+  background-position: left bottom !important;
+}
+
+/* 都会の空をもう少し広く感じるようにマスクを微調整 */
+.scene-window.scene-variant-urban .scene-urban-layer {
+  -webkit-mask-image: linear-gradient(to top, rgba(0,0,0,1) 0 52%, rgba(0,0,0,0.98) 64%, rgba(0,0,0,0.55) 78%, rgba(0,0,0,0) 94%) !important;
+  mask-image: linear-gradient(to top, rgba(0,0,0,1) 0 52%, rgba(0,0,0,0.98) 64%, rgba(0,0,0,0.55) 78%, rgba(0,0,0,0) 94%) !important;
+}
+
+/* 少しだけ道路の主張を下げる */
+.scene-window.scene-variant-urban .scene-weather-haze {
+  opacity: 0.16 !important;
+}
+
+/* =========================================================
+   FINAL SMALL WINDOW POSITION FIX
+   - 都会背景をほんの少し下へ
+   - 田舎背景も横に連続させて端切れを防ぐ
+   ========================================================= */
+
+/* 都会: ほんの少しだけ下に配置 */
+.scene-window.scene-variant-urban .scene-urban-layer {
+  background-repeat: repeat-x !important;
+  background-size: auto 54% !important;
+  background-position: left bottom !important;
+  transform: translateY(1px) !important;
+}
+
+.scene-window.scene-variant-urban.time-night .scene-urban-layer {
+  background-repeat: repeat-x !important;
+  background-size: auto 52% !important;
+  background-position: left bottom !important;
+  transform: translateY(1px) !important;
+}
+
+/* 田舎: 横幅不足時は同画像を横に続け、少し引きで表示 */
+.scene-window.scene-variant-rural .scene-rural-layer {
+  background-repeat: repeat-x !important;
+  background-size: auto 48% !important;
+  background-position: left bottom !important;
+  transform: none !important;
+  opacity: 1 !important;
+}
+
+.scene-window.scene-variant-rural.time-night .scene-rural-layer {
+  background-repeat: repeat-x !important;
+  background-size: auto 46% !important;
+  background-position: left bottom !important;
+}
+
+.position-forecast .hour-card::after,
+.position-weather .metric-card::after,
+.position-weather .weather-main::after,
+.position-weather .character-console::after,
+.scene-window::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: repeating-linear-gradient(180deg, rgba(255,255,255,0.02) 0 1px, rgba(0,0,0,0) 1px 5px);
+  opacity: 0.22;
+}
+
+.scene-window {
+  border: 4px solid #5f7888 !important;
+  box-shadow:
+    0 0 0 4px rgba(16, 40, 58, 0.95),
+    8px 8px 0 rgba(3, 16, 25, 0.78),
+    inset 0 0 0 2px rgba(223, 239, 245, 0.10) !important;
+}
+
+.scene-frame-horizontal,
+.scene-frame-vertical {
+  background: #33475a !important;
+  box-shadow:
+    0 0 0 1px rgba(225, 240, 245, 0.10),
+    inset 1px 1px 0 rgba(255,255,255,0.08),
+    inset -1px -1px 0 rgba(0,0,0,0.25) !important;
+}
+
+.scene-glass {
+  opacity: 0.7 !important;
+}
+
+/* =========================================================
+   SMALL WINDOW LAYER ORDER FIX
+   小窓の重ね順を整理
+   後ろ → 前：
+   1. 空
+   2. 背景側の天気表現（太陽・月・星・雲）
+   3. 町 / 田舎の画像
+   4. 前景側の天気表現（霞・雨・雪・雷）
+   5. 窓ガラス・窓枠
+   ========================================================= */
+
+.scene-window {
+  isolation: isolate !important;
+}
+
+/* 1. 空 */
+.scene-sky {
+  z-index: 1 !important;
+}
+
+/* 2. 背景側の天気 */
+.scene-stars {
+  z-index: 2 !important;
+}
+
+.scene-sun,
+.scene-moon,
+.scene-cloud {
+  z-index: 3 !important;
+}
+
+/* 使わない旧図形は引き続き非表示 */
+.scene-hills,
+.scene-city,
+.scene-ground {
+  display: none !important;
+}
+
+/* 3. 町 / 田舎の画像 */
+.scene-landscape,
+.scene-rural-layer,
+.scene-urban-layer {
+  z-index: 6 !important;
+}
+
+/* 田舎と都会は、選ばれた方だけ表示 */
+.scene-rural-layer,
+.scene-urban-layer {
+  pointer-events: none !important;
+}
+
+/* 4. 前景側の天気 */
+.scene-weather-haze {
+  z-index: 7 !important;
+  pointer-events: none !important;
+}
+
+.scene-rain,
+.scene-snow {
+  z-index: 8 !important;
+  pointer-events: none !important;
+}
+
+.scene-lightning {
+  z-index: 9 !important;
+  pointer-events: none !important;
+}
+
+/* 5. 窓ガラス・窓枠・ラベル */
+.scene-glass {
+  z-index: 10 !important;
+  opacity: 0.42 !important;
+}
+
+.scene-window::after {
+  z-index: 11 !important;
+}
+
+.scene-frame-horizontal,
+.scene-frame-vertical {
+  z-index: 12 !important;
+}
+
+.scene-code {
+  z-index: 13 !important;
+}
+
+/* 前景天気が町画像を潰しすぎないように少し控えめにする */
+.scene-window.theme-cloudy .scene-weather-haze {
+  opacity: 0.38 !important;
+}
+
+.scene-window.theme-rain .scene-weather-haze,
+.scene-window.theme-storm .scene-weather-haze {
+  opacity: 0.52 !important;
+}
+
+.scene-window.theme-snow .scene-weather-haze {
+  opacity: 0.45 !important;
+}
+
+/* 夕方のとき、町画像に紫っぽい霞がかかりすぎないようにする */
+.scene-window.time-evening .scene-weather-haze {
+  opacity: 0.28 !important;
+}
+
+/* =========================================================
+   SMALL WINDOW BLUE BAND REMOVAL
+   小窓の背景に出る青い帯を除去
+   - 空の背景を上下2色の水平分割から、自然な縦グラデーションへ変更
+   - 町画像の後ろに出る不自然な青い帯を目立たなくする
+   ========================================================= */
+
+/* 基本の空: 水平分割をやめる */
+.scene-sky {
+  background: linear-gradient(180deg, #7cc7ff 0%, #b9ecff 100%) !important;
+}
+
+/* 天気ごとの空 */
+.scene-window.theme-clear .scene-sky {
+  background: linear-gradient(180deg, #64c8ff 0%, #bdf1ff 100%) !important;
+}
+
+.scene-window.theme-cloudy .scene-sky {
+  background: linear-gradient(180deg, #8c9ead 0%, #c8d3d9 100%) !important;
+}
+
+.scene-window.theme-rain .scene-sky {
+  background: linear-gradient(180deg, #4e6f86 0%, #8ea1ad 100%) !important;
+}
+
+.scene-window.theme-snow .scene-sky {
+  background: linear-gradient(180deg, #dbe8f2 0%, #f2f7fb 100%) !important;
+}
+
+.scene-window.theme-storm .scene-sky {
+  background: linear-gradient(180deg, #2d3e5a 0%, #5a6a83 100%) !important;
+}
+
+/* 時間帯ごとの空 */
+.scene-window.time-night .scene-sky {
+  background: linear-gradient(180deg, #101b38 0%, #253653 100%) !important;
+}
+
+.scene-window.time-evening .scene-sky {
+  background: linear-gradient(180deg, #ff9c6b 0%, #f2c28f 100%) !important;
+}
+
+.scene-window.time-morning .scene-sky {
+  background: linear-gradient(180deg, #ffd49a 0%, #ffe8c8 100%) !important;
+}
+
+/* テーマと時間帯が重なったときも帯が出にくいよう、霞を抑える */
+.scene-weather-haze {
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.00) 0%, rgba(255,255,255,0.04) 100%),
+    linear-gradient(180deg, rgba(8,16,26,0.00) 0%, rgba(8,16,26,0.06) 100%) !important;
+}
+
+.scene-window.time-evening .scene-weather-haze {
+  opacity: 0.20 !important;
+  background:
+    linear-gradient(180deg, rgba(255,179,118,0.02) 0%, rgba(255,190,130,0.08) 100%),
+    linear-gradient(180deg, rgba(8,16,26,0.00) 0%, rgba(8,16,26,0.06) 100%) !important;
+}
+
+.scene-window.time-morning .scene-weather-haze {
+  opacity: 0.16 !important;
+}
+
+/* =========================================================
+   LARGE WINDOW CITY BACKGROUND
+   都市ごとの昼 / 夜背景を大窓枠モードで表示する。
+   将来は city/weather/time の画像追加に対応できる設計。
+   ========================================================= */
+
+.room-background-layer {
+  background: #080b12;
+}
+
+#largeWindowBackgroundImage.image-room-base {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  object-position: center center !important;
+  image-rendering: pixelated;
+  transition: opacity 0.28s ease, filter 0.28s ease;
+}
+
+.immersive-window-scene[data-large-time="night"] #largeWindowBackgroundImage {
+  filter: saturate(1.04) contrast(1.04) brightness(0.96);
+}
+
+.immersive-window-scene[data-large-time="day"] #largeWindowBackgroundImage {
+  filter: saturate(1.06) contrast(1.03) brightness(1.00);
+}
+
+/* =========================================================
+   LARGE WINDOW BACK-FIRST LAYER MODEL
+   大窓枠モードのレイヤーを将来の透明切り抜き画像に対応させる。
+   後ろ → 前：
+   1. 空背景
+   2. 天気アニメーション
+   3. 部屋イラスト
+   4. 窓ガラス / 光 / ステータス
+   ========================================================= */
+
+body.window-only-mode .immersive-window-scene {
+  background: #07111d !important;
+}
+
+.layered-room-scene {
+  isolation: isolate;
+}
+
+/* 1. 一番後ろの空背景。画像の窓位置が違っても合うように全画面まで広げる */
+.room-background-layer {
+  z-index: 1 !important;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 50% 18%, rgba(255,255,255,0.22), transparent 20%),
+    linear-gradient(180deg, #5fc8ff 0%, #aee9ff 56%, #d9f5ff 100%) !important;
+}
+
+.large-room-sky {
+  position: absolute;
+  inset: -8%;
+  background:
+    radial-gradient(circle at 18% 20%, rgba(255, 230, 110, 0.72) 0 4%, rgba(255, 210, 78, 0.20) 4% 9%, transparent 10%),
+    linear-gradient(180deg, #41baff 0%, #94ddff 46%, #d8f6ff 100%);
+  image-rendering: pixelated;
+}
+
+/* 夜背景。大窓枠側の data-large-time に連動 */
+.immersive-window-scene[data-large-time="night"] .room-background-layer {
+  background:
+    radial-gradient(circle at 74% 16%, rgba(235,245,255,0.22), transparent 12%),
+    linear-gradient(180deg, #07142f 0%, #102851 56%, #20365b 100%) !important;
+}
+
+.immersive-window-scene[data-large-time="night"] .large-room-sky {
+  background:
+    radial-gradient(circle at 75% 18%, rgba(230,245,255,0.88) 0 3%, rgba(230,245,255,0.16) 3% 7%, transparent 8%),
+    radial-gradient(circle at 30% 25%, rgba(255,255,255,0.52) 0 1px, transparent 2px),
+    radial-gradient(circle at 42% 15%, rgba(255,255,255,0.48) 0 1px, transparent 2px),
+    radial-gradient(circle at 60% 30%, rgba(255,255,255,0.42) 0 1px, transparent 2px),
+    linear-gradient(180deg, #07142f 0%, #102851 52%, #20365b 100%);
+}
+
+/* 2. 天気アニメーションは部屋イラストより後ろ。透明窓部分からだけ見える想定 */
+.room-weather-layer {
+  z-index: 2 !important;
+  pointer-events: none !important;
+}
+
+/* 窓位置が画像ごとに違っても対応しやすいよう、天気アニメーション範囲を大きくする */
+.window-weather-viewport {
+  left: -4% !important;
+  top: -6% !important;
+  width: 108% !important;
+  height: 86% !important;
+  overflow: hidden !important;
+}
+
+/* 3. 部屋イラスト。あとで窓・空部分を透過すれば、後ろの空と天気が見える */
+.room-illustration-layer {
+  z-index: 3 !important;
+  pointer-events: none !important;
+}
+
+.room-illustration-layer .image-room-base {
+  position: absolute !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  object-position: center center !important;
+  image-rendering: pixelated;
+}
+
+/* 4. ガラス反射やステータスは一番前 */
+.room-window-frame-layer {
+  z-index: 4 !important;
+  pointer-events: none !important;
+}
+
+.image-room-status {
+  z-index: 5 !important;
+}
+
+/* 既存の「背景画像そのもの」指定が残っていても、新レイヤー順を優先する */
+.room-background-layer #largeWindowBackgroundImage {
+  display: none !important;
+}
+
+/* 透明切り抜き前の画像でも見た目が変わりすぎないよう、部屋画像は通常表示 */
+#largeWindowBackgroundImage.image-room-base {
+  opacity: 1 !important;
+}
+
+/* 将来的に透過PNGを入れた時の境界をなじませるための薄い背景補助 */
+.room-illustration-layer::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: transparent;
+}

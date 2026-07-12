@@ -1,0 +1,6 @@
+/* WeatherSpot stylesheet entry point */
+@import url("styles/boot.css");
+@import url("styles/dashboard.css");
+@import url("styles/window.css");
+@import url("styles/menu.css");
+@import url("styles/responsive.css");
