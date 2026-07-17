@@ -348,6 +348,7 @@ async function fetchWeather() {
 
     updateMusicMode(weatherInfo);
     renderHourly(data.hourly, current.time);
+    document.dispatchEvent(new CustomEvent("weatherspot:weather-updated"));
 
     writeLog([
       "API response received",

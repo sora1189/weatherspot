@@ -113,10 +113,60 @@
   line-height: 1;
 }
 
+.drawer-tabs {
+  position: sticky;
+  top: 83px;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+  padding: 10px 18px;
+  border-bottom: 1px solid var(--line);
+  background: rgba(8, 14, 24, 0.98);
+  backdrop-filter: blur(12px);
+}
+
+.drawer-tab-button {
+  min-width: 0;
+  min-height: 42px;
+  padding: 9px 6px;
+  border: 1px solid rgba(82, 229, 170, 0.28);
+  color: #8ebdca;
+  background: rgba(5, 18, 29, 0.92);
+  font: 700 12px/1 "MS Gothic", "Courier New", monospace;
+  letter-spacing: 0.08em;
+}
+
+.drawer-tab-button:hover,
+.drawer-tab-button:focus-visible {
+  color: #eaffff;
+  border-color: rgba(82, 229, 170, 0.7);
+}
+
+.drawer-tab-button.is-active {
+  color: #03110b;
+  border-color: #55e9af;
+  background: #55e9af;
+  box-shadow: 0 0 18px rgba(82, 229, 170, 0.2);
+}
+
 .drawer-content {
   display: grid;
   gap: 16px;
   padding: 18px;
+}
+
+.drawer-tab-panel {
+  display: grid;
+  gap: 16px;
+}
+
+.drawer-tab-panel[hidden] {
+  display: none;
+}
+
+.drawer-tab-panel > .current-track-panel {
+  margin: 0;
 }
 
 .drawer-panel {
@@ -298,8 +348,16 @@ body.window-only-mode .floating-menu-button:hover {
 
 .app-menu-layer .floating-menu-button,
 .app-menu-layer .drawer-backdrop,
-.app-menu-layer .music-drawer {
+.app-menu-layer .music-drawer,
+.app-menu-layer .live-feed-button,
+.app-menu-layer .live-feed-panel.is-open,
+.app-menu-layer .report-dialog-layer:not([hidden]),
+.app-menu-layer .admin-panel-layer:not([hidden]) {
   pointer-events: auto;
+}
+
+.app-menu-layer .live-feed-panel:not(.is-open) {
+  pointer-events: none;
 }
 
 .app-menu-layer .floating-menu-button {
@@ -506,6 +564,12 @@ button:active,
   grid-column: span 2;
 }
 
+.settings-account-panel #spotifyLogoutButton {
+  width: 100%;
+  min-height: 44px;
+  margin-bottom: 14px;
+}
+
 .spotify-note {
   border-radius: 0 !important;
   border: 2px solid rgba(57, 215, 162, 0.25) !important;
@@ -516,6 +580,1174 @@ button:active,
 .spotify-note p {
   margin: 4px 0;
   color: #9fd9e7 !important;
+}
+
+/* =========================================================
+   NOW PLAYING
+   Spotifyで現在再生中の曲を表示する。
+   ========================================================= */
+
+.current-track-panel {
+  display: grid;
+  gap: 12px;
+  margin: 16px 0;
+  padding: 14px;
+  border: 2px solid rgba(57, 215, 162, 0.45);
+  background:
+    linear-gradient(135deg, rgba(38, 213, 157, 0.08), transparent 55%),
+    rgba(3, 14, 24, 0.86);
+  box-shadow: inset 0 0 18px rgba(64, 229, 182, 0.06);
+}
+
+.current-track-heading,
+.current-track-content {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.current-track-heading {
+  justify-content: space-between;
+  border-bottom: 1px solid rgba(105, 224, 197, 0.22);
+  padding-bottom: 10px;
+}
+
+.current-track-heading .small-label {
+  margin: 0 0 4px;
+}
+
+#currentTrackPlaybackState,
+.spotify-source-label {
+  color: #8ebdca;
+  font: 12px/1.4 "MS Gothic", "Courier New", monospace;
+  letter-spacing: 0.08em;
+}
+
+.spotify-source-label {
+  color: #52e5aa;
+  white-space: nowrap;
+}
+
+.current-track-artwork-wrap {
+  position: relative;
+  flex: 0 0 86px;
+  width: 86px;
+  height: 86px;
+  border: 2px solid rgba(93, 231, 197, 0.48);
+  background: #071522;
+  overflow: hidden;
+}
+
+.current-track-artwork,
+.current-track-placeholder {
+  width: 100%;
+  height: 100%;
+}
+
+.current-track-artwork {
+  display: block;
+  object-fit: cover;
+}
+
+.current-track-placeholder {
+  display: grid;
+  place-items: center;
+  color: #46dca8;
+  font-size: 34px;
+  background: repeating-linear-gradient(135deg, #071522 0 8px, #0b1d2c 8px 16px);
+}
+
+.current-track-meta {
+  min-width: 0;
+  display: grid;
+  gap: 6px;
+}
+
+.current-track-meta strong,
+.current-track-meta span {
+  overflow-wrap: anywhere;
+}
+
+.current-track-meta strong {
+  color: #effcff;
+  font-size: 16px;
+}
+
+.current-track-meta span {
+  color: #a9d5df;
+}
+
+.current-track-meta a {
+  width: fit-content;
+  color: #55e9af;
+  font-weight: 700;
+}
+
+.current-track-panel #getCurrentTrackButton {
+  width: 100%;
+  min-height: 44px;
+}
+
+@media (max-width: 520px) {
+  .current-track-heading {
+    display: grid;
+    justify-content: stretch;
+    gap: 8px;
+  }
+
+  .spotify-source-label {
+    white-space: normal;
+  }
+
+  .current-track-content {
+    align-items: flex-start;
+  }
+
+  .current-track-artwork-wrap {
+    flex-basis: 72px;
+    width: 72px;
+    height: 72px;
+  }
+
+  .drawer-tabs {
+    top: 78px;
+    padding: 8px 12px;
+  }
+
+  .drawer-tab-button {
+    font-size: 11px;
+    letter-spacing: 0.03em;
+  }
+}
+
+/* =========================================================
+   CLOUD WEATHER DIARY / PHASE 05
+   投稿フォームとAzure上の公開タイムライン。
+   ========================================================= */
+
+.share-diary-panel .drawer-panel-body {
+  display: grid;
+  gap: 14px;
+}
+
+.share-diary-panel .drawer-description {
+  margin: 0;
+}
+
+.share-context-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.share-context-grid > div {
+  min-width: 0;
+  display: grid;
+  gap: 5px;
+  padding: 11px;
+  border: 1px solid rgba(91, 224, 193, 0.3);
+  background: rgba(4, 19, 31, 0.82);
+}
+
+.share-context-grid span {
+  color: #53e4ab;
+  font: 11px/1.2 "MS Gothic", "Courier New", monospace;
+  letter-spacing: 0.12em;
+}
+
+.share-context-grid strong,
+.share-context-grid small {
+  overflow-wrap: anywhere;
+}
+
+.share-context-grid strong {
+  color: #edfaff;
+  font-size: 14px;
+}
+
+.share-context-grid small {
+  color: #9dcbd6;
+}
+
+.share-context-track {
+  grid-column: 1 / -1;
+}
+
+.share-diary-form {
+  display: grid;
+  gap: 8px;
+  padding: 14px;
+  border: 2px solid rgba(57, 215, 162, 0.38);
+  background: rgba(3, 14, 24, 0.88);
+}
+
+.share-diary-form label {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  color: #dff8ff;
+  font-weight: 700;
+}
+
+.share-diary-form label small,
+.share-message-label span {
+  color: #8ebdca;
+  font-size: 12px;
+  font-weight: 400;
+}
+
+.share-diary-form input,
+.share-diary-form textarea {
+  width: 100%;
+  margin: 0 0 6px;
+  border: 1px solid rgba(82, 229, 170, 0.45);
+  border-radius: 0;
+  padding: 12px;
+  color: #effcff;
+  background: #06101c;
+  font: inherit;
+  resize: vertical;
+}
+
+.share-diary-form textarea {
+  min-height: 86px;
+  line-height: 1.6;
+}
+
+.share-diary-form input:focus,
+.share-diary-form textarea:focus {
+  outline: 2px solid rgba(82, 229, 170, 0.65);
+  outline-offset: 2px;
+}
+
+.share-diary-form #prepareShareButton {
+  width: 100%;
+  min-height: 46px;
+}
+
+.share-diary-form #prepareShareButton:disabled {
+  cursor: not-allowed;
+  filter: saturate(0.25);
+}
+
+.share-form-status {
+  min-height: 1.5em;
+  margin: 0;
+  color: #9dcbd6;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.share-form-status.is-ready {
+  color: #55e9af;
+}
+
+.share-form-status.is-error {
+  color: #ffd56a;
+}
+
+.local-draft-summary {
+  margin: 0;
+  padding: 10px 12px;
+  border: 1px dashed rgba(82, 229, 170, 0.35);
+  color: #9dcbd6;
+  background: rgba(3, 14, 24, 0.72);
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.local-draft-summary strong {
+  color: #55e9af;
+  font-size: 16px;
+}
+
+.local-draft-summary span {
+  display: block;
+}
+
+.live-feed-button {
+  position: fixed;
+  top: 88px;
+  right: 12px;
+  z-index: 100000;
+  width: 64px;
+  height: 64px;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: 1fr;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  padding: 8px;
+  border: 1px solid rgba(82, 229, 170, 0.58);
+  border-radius: 0;
+  color: #03110b;
+  background: #55e9af;
+  box-shadow: 0 0 0 3px rgba(5, 42, 39, 0.86), 0 10px 28px rgba(0, 0, 0, 0.35);
+  transform: none;
+  transition: opacity 0.2s ease, transform 0.22s ease;
+}
+
+.live-feed-button > span {
+  color: #03110b;
+  font: 900 11px/1.05 "MS Gothic", "Courier New", monospace;
+  letter-spacing: 0.08em;
+  text-align: center;
+}
+
+.live-feed-button > strong {
+  position: absolute;
+  top: -7px;
+  right: -7px;
+  min-width: 23px;
+  height: 23px;
+  display: grid;
+  place-items: center;
+  padding: 0 5px;
+  border: 1px solid rgba(82, 229, 170, 0.8);
+  border-radius: 50%;
+  color: #55e9af;
+  background: #07111d;
+  font-size: 10px;
+}
+
+.live-feed-button:hover,
+.live-feed-button:focus-visible {
+  transform: translateX(-3px);
+}
+
+body.live-feed-open .live-feed-button {
+  opacity: 0;
+  pointer-events: none;
+  transform: translateX(120%);
+}
+
+body.is-booting .live-feed-button,
+body.window-only-mode .live-feed-button {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.live-feed-panel {
+  position: fixed;
+  inset: 0 0 0 auto;
+  z-index: 100004;
+  width: min(460px, calc(100vw - 18px));
+  height: 100vh;
+  height: 100dvh;
+  display: grid;
+  grid-template-rows: auto auto minmax(0, 1fr);
+  overflow: hidden;
+  border-left: 1px solid rgba(82, 229, 170, 0.48);
+  color: #effcff;
+  background:
+    linear-gradient(rgba(56, 242, 165, 0.028) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(56, 242, 165, 0.028) 1px, transparent 1px),
+    rgba(6, 14, 24, 0.985);
+  background-size: 26px 26px, 26px 26px, auto;
+  box-shadow: -20px 0 80px rgba(0, 0, 0, 0.62);
+  transform: translateX(105%);
+  visibility: hidden;
+  transition: transform 0.24s ease, visibility 0.24s ease;
+}
+
+.live-feed-panel.is-open {
+  transform: translateX(0);
+  visibility: visible;
+}
+
+.live-feed-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 16px;
+  border-bottom: 1px solid rgba(82, 229, 170, 0.28);
+  background: rgba(7, 16, 27, 0.96);
+}
+
+.live-feed-header .small-label,
+.live-feed-header h2 {
+  margin: 0;
+}
+
+.live-feed-header h2 {
+  margin-top: 4px;
+  color: #effcff;
+  font-size: 22px;
+  letter-spacing: 0.06em;
+}
+
+.live-feed-header #cloudTimelineCount {
+  display: block;
+  margin-top: 5px;
+  color: #7faab6;
+  font: 10px/1.3 "MS Gothic", "Courier New", monospace;
+}
+
+.live-feed-close-button {
+  flex: 0 0 auto;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border-radius: 50%;
+  color: #03110b;
+  background: #55e9af;
+  font-size: 24px;
+  line-height: 1;
+}
+
+.live-feed-controls {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-bottom: 1px solid rgba(82, 229, 170, 0.2);
+  background: rgba(4, 15, 25, 0.94);
+}
+
+.live-feed-controls #refreshCloudTimelineButton {
+  min-height: 36px;
+  padding: 8px 11px;
+  font-size: 11px;
+}
+
+.live-feed-list {
+  min-height: 0;
+  margin: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  border: 0;
+  border-radius: 0;
+  overscroll-behavior: contain;
+  scrollbar-color: rgba(82, 229, 170, 0.55) rgba(3, 14, 24, 0.85);
+}
+
+#refreshCloudTimelineButton {
+  flex: 0 0 auto;
+  min-height: 40px;
+  padding: 9px 14px;
+}
+
+#refreshCloudTimelineButton:disabled {
+  cursor: progress;
+  opacity: 0.55;
+}
+
+.cloud-timeline-status {
+  min-height: 1.5em;
+  margin: 0;
+  color: #9dcbd6;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.cloud-timeline-list {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0;
+  border: 1px solid rgba(82, 229, 170, 0.28);
+  background: rgba(3, 14, 24, 0.72);
+}
+
+.cloud-timeline-list[aria-busy="true"] {
+  opacity: 0.62;
+}
+
+.cloud-timeline-card {
+  min-width: 0;
+  display: grid;
+  grid-template-columns: 40px minmax(0, 1fr);
+  align-items: start;
+  gap: 11px;
+  padding: 13px 14px;
+  border: 0;
+  border-bottom: 1px solid rgba(82, 229, 170, 0.2);
+  background:
+    linear-gradient(90deg, rgba(82, 229, 170, 0.05), transparent 42%),
+    rgba(3, 14, 24, 0.78);
+  transition: background 0.18s ease;
+}
+
+.cloud-timeline-card:last-child {
+  border-bottom: 0;
+}
+
+.cloud-timeline-card:hover {
+  background:
+    linear-gradient(90deg, rgba(82, 229, 170, 0.09), transparent 48%),
+    rgba(5, 19, 30, 0.94);
+}
+
+.cloud-timeline-avatar {
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(82, 229, 170, 0.42);
+  border-radius: 50%;
+  color: #55e9af;
+  background: #07111d;
+  object-fit: cover;
+  font-size: 18px;
+}
+
+.cloud-timeline-avatar.is-placeholder {
+  box-shadow: inset 0 0 14px rgba(82, 229, 170, 0.08);
+}
+
+.cloud-timeline-body {
+  min-width: 0;
+  display: grid;
+  gap: 7px;
+}
+
+.cloud-timeline-card header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.cloud-timeline-identity {
+  min-width: 0;
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  margin: 0;
+}
+
+.cloud-timeline-name {
+  overflow-wrap: anywhere;
+  color: #effcff;
+  font-size: 14px;
+}
+
+.cloud-timeline-handle {
+  min-width: 0;
+  overflow: hidden;
+  color: #719da9;
+  font: 11px/1.3 "MS Gothic", "Courier New", monospace;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cloud-timeline-time {
+  flex: 0 0 auto;
+  color: #7faab6;
+  font: 10px/1.3 "MS Gothic", "Courier New", monospace;
+  white-space: nowrap;
+}
+
+.cloud-timeline-message {
+  margin: 0;
+  overflow-wrap: anywhere;
+  color: #f4fdff;
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+.cloud-timeline-context {
+  margin: 0;
+  overflow-wrap: anywhere;
+  color: #a9d2dc;
+  font-size: 11px;
+}
+
+.cloud-timeline-weather {
+  color: #55e9af;
+}
+
+.cloud-timeline-track {
+  min-width: 0;
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 7px;
+  padding: 7px 9px;
+  border-left: 2px solid rgba(82, 229, 170, 0.45);
+  background: rgba(82, 229, 170, 0.045);
+}
+
+.cloud-timeline-now-playing {
+  flex: 0 0 auto;
+  color: #55e9af;
+  font: 9px/1.3 "MS Gothic", "Courier New", monospace;
+  letter-spacing: 0.07em;
+}
+
+.cloud-timeline-track-title {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  color: #edfaff;
+  font-size: 11px;
+  text-decoration: none;
+}
+
+a.cloud-timeline-track-title:hover,
+a.cloud-timeline-track-title:focus-visible {
+  color: #55e9af;
+  text-decoration: underline;
+}
+
+.cloud-timeline-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.cloud-timeline-report-button {
+  width: auto;
+  min-width: 0;
+  min-height: 20px;
+  padding: 2px 5px;
+  border-color: rgba(127, 170, 182, 0.2);
+  color: #7faab6;
+  background: transparent;
+  font-size: 9px;
+  line-height: 1.1;
+  opacity: 0.72;
+}
+
+.cloud-timeline-report-button:hover,
+.cloud-timeline-report-button:focus-visible {
+  border-color: rgba(255, 213, 106, 0.7);
+  color: #ffd56a;
+  opacity: 1;
+}
+
+.cloud-timeline-report-button:disabled {
+  cursor: default;
+  opacity: 0.5;
+}
+
+.cloud-timeline-empty {
+  grid-column: 1 / -1;
+  margin: 0;
+  padding: 22px 14px;
+  border: 1px dashed rgba(82, 229, 170, 0.3);
+  color: #9dcbd6;
+  background: rgba(3, 14, 24, 0.72);
+  line-height: 1.7;
+  text-align: center;
+}
+
+.cloud-timeline-empty.is-error {
+  color: #ffd56a;
+  border-color: rgba(255, 213, 106, 0.36);
+}
+
+body.report-dialog-open {
+  overflow: hidden;
+}
+
+.report-dialog-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 100120;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+}
+
+.report-dialog-layer[hidden] {
+  display: none;
+}
+
+.report-dialog-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 5, 10, 0.84);
+  backdrop-filter: blur(5px);
+}
+
+.report-dialog {
+  position: relative;
+  z-index: 1;
+  width: min(430px, 100%);
+  border: 1px solid rgba(255, 213, 106, 0.52);
+  color: #effcff;
+  background: rgba(6, 14, 24, 0.99);
+  box-shadow: 0 20px 80px rgba(0, 0, 0, 0.68);
+}
+
+.report-dialog-body {
+  display: grid;
+  gap: 13px;
+  padding: 20px;
+}
+
+.report-dialog-body .small-label,
+.report-dialog-body h2,
+.report-dialog-note,
+.report-dialog-status {
+  margin: 0;
+}
+
+.report-dialog-body h2 {
+  font-size: 20px;
+}
+
+.report-dialog-note {
+  color: #9dcbd6;
+  font-size: 12px;
+  line-height: 1.7;
+}
+
+.report-dialog-body label {
+  color: #ffd56a;
+  font-size: 12px;
+}
+
+.report-dialog-body select {
+  width: 100%;
+  min-height: 44px;
+  border: 1px solid rgba(82, 229, 170, 0.42);
+  color: #effcff;
+  background: #07111d;
+}
+
+.report-dialog-status {
+  min-height: 1.5em;
+  color: #ffd56a;
+  font-size: 12px;
+}
+
+.report-dialog-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+#submitReportButton {
+  border-color: rgba(255, 213, 106, 0.65);
+  color: #081018;
+  background: #ffd56a;
+}
+
+#submitReportButton:disabled {
+  cursor: progress;
+  opacity: 0.55;
+}
+
+body.admin-panel-open {
+  overflow: hidden;
+}
+
+.host-control-panel #openAdminPanelButton {
+  border-color: rgba(255, 213, 106, 0.48);
+  color: #ffd56a;
+  background: rgba(255, 213, 106, 0.045);
+}
+
+.admin-panel-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 100140;
+  display: grid;
+  place-items: center;
+  padding: 18px;
+}
+
+.admin-panel-layer[hidden] {
+  display: none;
+}
+
+.admin-panel-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 5, 10, 0.9);
+  backdrop-filter: blur(6px);
+}
+
+.admin-panel {
+  position: relative;
+  z-index: 1;
+  width: min(720px, 100%);
+  max-height: min(820px, calc(100dvh - 36px));
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  overflow: hidden;
+  border: 1px solid rgba(255, 213, 106, 0.54);
+  color: #effcff;
+  background: rgba(6, 14, 24, 0.995);
+  box-shadow: 0 24px 100px rgba(0, 0, 0, 0.74);
+}
+
+.admin-panel-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px 18px;
+  border-bottom: 1px solid rgba(255, 213, 106, 0.28);
+}
+
+.admin-panel-header p,
+.admin-panel-header h2 {
+  margin: 0;
+}
+
+.admin-panel-header h2 {
+  margin-top: 4px;
+  font-size: 20px;
+}
+
+.admin-panel-close {
+  width: 38px;
+  min-width: 38px;
+  min-height: 38px;
+  padding: 0;
+  border-radius: 50%;
+  color: #07111d;
+  background: #ffd56a;
+  font-size: 22px;
+}
+
+.admin-login-view {
+  display: grid;
+  gap: 12px;
+  padding: 22px;
+  overflow-y: auto;
+}
+
+.admin-login-view label {
+  color: #ffd56a;
+  font-size: 12px;
+}
+
+.admin-login-view input {
+  width: 100%;
+  min-height: 46px;
+  border: 1px solid rgba(255, 213, 106, 0.42);
+  color: #effcff;
+  background: #07111d;
+}
+
+.admin-security-note {
+  margin: 0;
+  color: #7faab6;
+  font-size: 11px;
+  line-height: 1.6;
+}
+
+.admin-reports-view {
+  min-height: 0;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+}
+
+.admin-reports-view[hidden] {
+  display: none;
+}
+
+.admin-reports-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 14px;
+  border-bottom: 1px solid rgba(82, 229, 170, 0.2);
+}
+
+.admin-reports-toolbar > span {
+  color: #ffd56a;
+  font: 11px/1.3 "MS Gothic", "Courier New", monospace;
+}
+
+.admin-reports-toolbar > div {
+  display: flex;
+  gap: 7px;
+}
+
+.admin-reports-toolbar button {
+  min-height: 32px;
+  padding: 5px 9px;
+  font-size: 10px;
+}
+
+.admin-report-list {
+  min-height: 220px;
+  overflow-y: auto;
+}
+
+.admin-report-card {
+  display: grid;
+  gap: 9px;
+  padding: 14px 16px;
+  border-bottom: 1px solid rgba(82, 229, 170, 0.18);
+  background: rgba(3, 14, 24, 0.76);
+}
+
+.admin-report-card header,
+.admin-report-meta,
+.admin-report-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.admin-report-card h3,
+.admin-report-card p {
+  margin: 0;
+}
+
+.admin-report-card h3 {
+  color: #effcff;
+  font-size: 14px;
+}
+
+.admin-report-count {
+  color: #ffd56a;
+  font-size: 11px;
+}
+
+.admin-report-message {
+  padding: 9px 10px;
+  border-left: 2px solid rgba(255, 213, 106, 0.46);
+  color: #f4fdff;
+  background: rgba(255, 213, 106, 0.035);
+  line-height: 1.55;
+}
+
+.admin-report-meta {
+  align-items: flex-start;
+  color: #9dcbd6;
+  font-size: 11px;
+}
+
+.admin-report-actions {
+  justify-content: flex-end;
+}
+
+.admin-report-actions button {
+  min-height: 32px;
+  padding: 5px 10px;
+  font-size: 10px;
+}
+
+.admin-delete-post-button {
+  border-color: rgba(255, 111, 120, 0.62);
+  color: #ff9ca3;
+  background: rgba(255, 111, 120, 0.06);
+}
+
+.admin-dismiss-report-button {
+  color: #9dcbd6;
+  background: transparent;
+}
+
+.admin-report-empty {
+  margin: 0;
+  padding: 34px 18px;
+  color: #9dcbd6;
+  text-align: center;
+}
+
+.admin-panel-status {
+  min-height: 42px;
+  margin: 0;
+  padding: 11px 16px;
+  border-top: 1px solid rgba(255, 213, 106, 0.22);
+  color: #ffd56a;
+  font-size: 12px;
+}
+
+@media (max-width: 600px) {
+  .admin-panel-layer {
+    padding: 0;
+  }
+
+  .admin-panel {
+    width: 100vw;
+    max-height: 100dvh;
+    height: 100dvh;
+    border: 0;
+  }
+
+  .admin-reports-toolbar,
+  .admin-report-card header,
+  .admin-report-meta {
+    align-items: stretch;
+    flex-direction: column;
+  }
+}
+
+body.share-confirm-open {
+  overflow: hidden;
+}
+
+.share-confirm-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 100100;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  pointer-events: auto;
+}
+
+.share-confirm-layer[hidden] {
+  display: none;
+}
+
+.share-confirm-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 5, 10, 0.82);
+  backdrop-filter: blur(5px);
+}
+
+.share-confirm-dialog {
+  position: relative;
+  z-index: 1;
+  width: min(560px, 100%);
+  max-height: calc(100vh - 40px);
+  overflow-y: auto;
+  border: 2px solid rgba(85, 233, 175, 0.58);
+  color: #effcff;
+  background:
+    linear-gradient(135deg, rgba(38, 213, 157, 0.08), transparent 55%),
+    #07111d;
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.7);
+}
+
+.share-confirm-body {
+  display: grid;
+  gap: 16px;
+  padding: 18px;
+}
+
+.share-confirm-body h2 {
+  margin: 0;
+  color: #effcff;
+  font-size: clamp(20px, 4vw, 28px);
+}
+
+.share-confirm-list {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+}
+
+.share-confirm-list > div {
+  display: grid;
+  grid-template-columns: 120px minmax(0, 1fr);
+  gap: 12px;
+  padding: 11px 12px;
+  border: 1px solid rgba(82, 229, 170, 0.28);
+  background: rgba(3, 14, 24, 0.8);
+}
+
+.share-confirm-list dt {
+  color: #55e9af;
+  font: 12px/1.4 "MS Gothic", "Courier New", monospace;
+  letter-spacing: 0.08em;
+}
+
+.share-confirm-list dd {
+  min-width: 0;
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.share-confirm-list dd strong,
+.share-confirm-list dd span {
+  display: block;
+}
+
+.share-confirm-list dd span {
+  margin-top: 4px;
+  color: #9dcbd6;
+  font-size: 13px;
+}
+
+.share-confirm-note {
+  margin: 0;
+  padding: 12px;
+  border-left: 3px solid #ffd56a;
+  color: #c7dce3;
+  background: rgba(255, 213, 106, 0.06);
+  line-height: 1.7;
+}
+
+.share-confirm-actions {
+  display: grid;
+  grid-template-columns: 1fr 1.35fr;
+  gap: 10px;
+}
+
+.share-confirm-actions button {
+  min-height: 48px;
+}
+
+#cancelShareConfirmButton {
+  color: #d9f5ff;
+  border: 1px solid rgba(142, 189, 202, 0.45);
+  background: #102131;
+}
+
+@media (max-width: 520px) {
+  .share-context-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .share-context-track {
+    grid-column: auto;
+  }
+
+  .share-confirm-layer {
+    padding: 10px;
+  }
+
+  .share-confirm-dialog {
+    max-height: calc(100vh - 20px);
+  }
+
+  .share-confirm-list > div {
+    grid-template-columns: 1fr;
+    gap: 5px;
+  }
+
+  .share-confirm-actions {
+    grid-template-columns: 1fr;
+  }
+
+  .cloud-timeline-list {
+    grid-template-columns: 1fr;
+  }
+
+  .live-feed-panel {
+    width: 100vw;
+  }
+
+  .live-feed-button {
+    top: 80px;
+    right: 8px;
+    width: 56px;
+    height: 56px;
+  }
+
+  .live-feed-controls {
+    grid-template-columns: 1fr;
+  }
+
+  .live-feed-controls #refreshCloudTimelineButton {
+    width: 100%;
+  }
+
+  .cloud-timeline-card {
+    grid-template-columns: 36px minmax(0, 1fr);
+    gap: 9px;
+    padding: 12px 10px;
+  }
+
+  .cloud-timeline-avatar {
+    width: 36px;
+    height: 36px;
+  }
 }
 
 /* =========================================================

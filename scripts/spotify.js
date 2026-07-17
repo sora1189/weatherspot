@@ -44,6 +44,15 @@ let spotifyDeviceId = null;
 let spotifySdkReady = false;
 let repeatModeIndex = 0;
 let shuffleEnabled = false;
+let currentPlayingTrack = null;
+let currentPlayingIsPlaying = false;
+let currentTrackDisplayInitialized = false;
+let currentTrackRefreshTimer = null;
+let currentTrackRefreshInFlight = false;
+let lastCurrentTrackError = "";
+
+const CURRENT_TRACK_REFRESH_INTERVAL_MS = 5000;
+const CURRENT_TRACK_ERROR_RETRY_MS = 15000;
 
 window.onSpotifyWebPlaybackSDKReady = () => {
   spotifySdkReady = true;
@@ -107,6 +116,7 @@ async function startSpotifyLogin() {
 
   const scope = [
     "streaming",
+    "user-read-currently-playing",
     "user-read-email",
     "user-read-private",
     "user-read-playback-state",
@@ -170,6 +180,7 @@ async function handleSpotifyCallback() {
     window.history.replaceState({}, document.title, window.location.pathname);
     elements.spotifyStatus.textContent = "logged in";
     writeSpotifyLog(["Spotify login completed", "access token saved", "天気BGMを再生できます"]);
+    startCurrentlyPlayingAutoRefresh();
   } catch (err) {
     writeSpotifyLog(["Spotify token exchange failed", String(err.message || err)]);
   }
@@ -207,6 +218,8 @@ async function refreshSpotifyToken() {
 }
 
 function logoutSpotify() {
+  stopCurrentlyPlayingAutoRefresh();
+
   ["spotify_access_token", "spotify_refresh_token", "spotify_expires_at", "spotify_code_verifier"].forEach((key) => {
     localStorage.removeItem(key);
   });
@@ -218,6 +231,8 @@ function logoutSpotify() {
   }
 
   elements.spotifyStatus.textContent = "not connected";
+  renderCurrentlyPlayingTrack();
+  elements.currentTrackPlaybackState.textContent = "Spotifyへログインして曲を取得してください";
   writeSpotifyLog(["logged out", "tokens removed"]);
 }
 
@@ -296,6 +311,186 @@ async function spotifyApi(path, options = {}) {
   }
 
   return await response.json();
+}
+
+function renderCurrentlyPlayingTrack(track = null, isPlaying = false) {
+  currentPlayingTrack = track;
+  currentPlayingIsPlaying = isPlaying;
+  currentTrackDisplayInitialized = true;
+
+  if (!track) {
+    elements.currentTrackTitle.textContent = "再生中の曲がありません";
+    elements.currentTrackArtist.textContent = "Spotifyで曲を再生してから、もう一度取得してください";
+    elements.currentTrackPlaybackState.textContent = "NOT PLAYING";
+    elements.currentTrackImage.hidden = true;
+    elements.currentTrackImage.removeAttribute("src");
+    elements.currentTrackImage.alt = "";
+    elements.currentTrackPlaceholder.hidden = false;
+    elements.currentTrackSpotifyLink.hidden = true;
+    elements.currentTrackSpotifyLink.removeAttribute("href");
+    document.dispatchEvent(new CustomEvent("weatherspot:track-updated"));
+    return;
+  }
+
+  elements.currentTrackTitle.textContent = track.title;
+  elements.currentTrackArtist.textContent = track.artist;
+  elements.currentTrackPlaybackState.textContent = isPlaying ? "PLAYING NOW" : "PAUSED";
+
+  if (track.imageUrl) {
+    elements.currentTrackImage.src = track.imageUrl;
+    elements.currentTrackImage.alt = `${track.title}のアルバムジャケット`;
+    elements.currentTrackImage.hidden = false;
+    elements.currentTrackPlaceholder.hidden = true;
+  } else {
+    elements.currentTrackImage.hidden = true;
+    elements.currentTrackPlaceholder.hidden = false;
+  }
+
+  if (track.spotifyUrl) {
+    elements.currentTrackSpotifyLink.href = track.spotifyUrl;
+    elements.currentTrackSpotifyLink.hidden = false;
+  } else {
+    elements.currentTrackSpotifyLink.hidden = true;
+    elements.currentTrackSpotifyLink.removeAttribute("href");
+  }
+
+  document.dispatchEvent(new CustomEvent("weatherspot:track-updated"));
+}
+
+function hasSpotifySession() {
+  return Boolean(getStoredAccessToken() || localStorage.getItem("spotify_refresh_token"));
+}
+
+function stopCurrentlyPlayingAutoRefresh() {
+  clearTimeout(currentTrackRefreshTimer);
+  currentTrackRefreshTimer = null;
+}
+
+function scheduleCurrentlyPlayingRefresh(delay = CURRENT_TRACK_REFRESH_INTERVAL_MS) {
+  stopCurrentlyPlayingAutoRefresh();
+
+  if (document.hidden || !hasSpotifySession()) return;
+
+  currentTrackRefreshTimer = setTimeout(refreshCurrentlyPlayingTrackAutomatically, delay);
+}
+
+function startCurrentlyPlayingAutoRefresh() {
+  if (document.hidden || !hasSpotifySession()) return;
+  scheduleCurrentlyPlayingRefresh(0);
+}
+
+async function refreshCurrentlyPlayingTrackAutomatically() {
+  if (currentTrackRefreshInFlight || document.hidden || !hasSpotifySession()) return;
+
+  currentTrackRefreshInFlight = true;
+  let result;
+
+  try {
+    result = await loadCurrentlyPlayingTrack({ silent: true });
+  } finally {
+    currentTrackRefreshInFlight = false;
+  }
+
+  if (!result) {
+    scheduleCurrentlyPlayingRefresh(CURRENT_TRACK_ERROR_RETRY_MS);
+    return;
+  }
+
+  if (result.needsLogin) {
+    stopCurrentlyPlayingAutoRefresh();
+    return;
+  }
+
+  scheduleCurrentlyPlayingRefresh(
+    result.ok ? CURRENT_TRACK_REFRESH_INTERVAL_MS : CURRENT_TRACK_ERROR_RETRY_MS
+  );
+}
+
+function initCurrentlyPlayingAutoRefresh() {
+  document.addEventListener("visibilitychange", () => {
+    if (document.hidden) {
+      stopCurrentlyPlayingAutoRefresh();
+    } else {
+      startCurrentlyPlayingAutoRefresh();
+    }
+  });
+
+  startCurrentlyPlayingAutoRefresh();
+}
+
+async function loadCurrentlyPlayingTrack({ silent = false } = {}) {
+  if (!elements.getCurrentTrackButton) {
+    return { ok: false, needsLogin: false, track: null };
+  }
+
+  if (!silent) {
+    elements.getCurrentTrackButton.disabled = true;
+    elements.getCurrentTrackButton.textContent = "取得中...";
+    elements.currentTrackPlaybackState.textContent = "CHECKING SPOTIFY...";
+  }
+
+  try {
+    const playback = await spotifyApi("/me/player/currently-playing");
+    const item = playback?.item;
+
+    if (!item || item.type !== "track") {
+      if (!currentTrackDisplayInitialized || currentPlayingTrack) {
+        renderCurrentlyPlayingTrack();
+        writeSpotifyLog(["currently playing track not found"]);
+      }
+      lastCurrentTrackError = "";
+      return { ok: true, needsLogin: false, track: null };
+    }
+
+    const track = {
+      id: String(item.id || ""),
+      title: String(item.name || "曲名不明"),
+      artist: Array.isArray(item.artists)
+        ? item.artists.map((artist) => artist.name).filter(Boolean).join(", ")
+        : "アーティスト不明",
+      imageUrl: String(item.album?.images?.[0]?.url || ""),
+      spotifyUrl: String(item.external_urls?.spotify || "")
+    };
+
+    const isPlaying = Boolean(playback.is_playing);
+    const trackChanged = !currentTrackDisplayInitialized
+      || currentPlayingTrack?.id !== track.id
+      || currentPlayingIsPlaying !== isPlaying;
+
+    if (trackChanged || !silent) {
+      renderCurrentlyPlayingTrack(track, isPlaying);
+    }
+
+    if (trackChanged) {
+      writeSpotifyLog(["currently playing track updated", `${track.title} / ${track.artist}`]);
+    } else if (!silent) {
+      writeSpotifyLog(["currently playing track checked", "no change"]);
+    }
+
+    lastCurrentTrackError = "";
+    return { ok: true, needsLogin: false, track };
+  } catch (error) {
+    const message = String(error?.message || error);
+    const needsLogin = message.includes("access token is missing");
+
+    if (!silent || needsLogin) {
+      elements.currentTrackPlaybackState.textContent = needsLogin
+        ? "Spotifyへログインしてください"
+        : "取得できませんでした";
+    }
+
+    if (!silent || lastCurrentTrackError !== message) {
+      writeSpotifyLog(["currently playing track failed", message, "Spotifyでログインしてください"]);
+    }
+
+    lastCurrentTrackError = message;
+    return { ok: false, needsLogin, track: null };
+  } finally {
+    if (!silent) {
+      elements.getCurrentTrackButton.disabled = false;
+      elements.getCurrentTrackButton.textContent = "現在の曲を取得";
+    }
+  }
 }
 
 function wait(ms) {
@@ -379,6 +574,7 @@ async function playWeatherBgm(manual = true) {
     });
 
     elements.spotifyStatus.textContent = "playing";
+    scheduleCurrentlyPlayingRefresh(800);
     writeSpotifyLog([
       manual ? "manual weather BGM start" : "auto weather BGM switch",
       `weather: ${lastWeatherInfo?.name || "--"}`,
@@ -401,6 +597,7 @@ async function resumeSpotify() {
   try {
     await spotifyApi(`/me/player/play${getPlaybackQuery()}`, { method: "PUT" });
     elements.spotifyStatus.textContent = "playing";
+    scheduleCurrentlyPlayingRefresh(500);
     writeSpotifyLog(["playback resumed"]);
   } catch (err) {
     writeSpotifyLog(["resume failed", String(err.message || err)]);
@@ -411,6 +608,7 @@ async function pauseSpotify() {
   try {
     await spotifyApi(`/me/player/pause${getPlaybackQuery()}`, { method: "PUT" });
     elements.spotifyStatus.textContent = "paused";
+    scheduleCurrentlyPlayingRefresh(500);
     writeSpotifyLog(["playback paused"]);
   } catch (err) {
     writeSpotifyLog(["pause failed", String(err.message || err)]);
@@ -420,6 +618,7 @@ async function pauseSpotify() {
 async function nextTrack() {
   try {
     await spotifyApi(`/me/player/next${getPlaybackQuery()}`, { method: "POST" });
+    scheduleCurrentlyPlayingRefresh(700);
     writeSpotifyLog(["skipped to next track"]);
   } catch (err) {
     writeSpotifyLog(["next track failed", String(err.message || err)]);
@@ -429,6 +628,7 @@ async function nextTrack() {
 async function previousTrack() {
   try {
     await spotifyApi(`/me/player/previous${getPlaybackQuery()}`, { method: "POST" });
+    scheduleCurrentlyPlayingRefresh(700);
     writeSpotifyLog(["returned to previous track"]);
   } catch (err) {
     writeSpotifyLog(["previous track failed", String(err.message || err)]);

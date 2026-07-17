@@ -14,6 +14,15 @@ desktop.ini
 .env.*
 !.env.example
 *.local
+api/local.settings.json
+weatherspot-admin-key.local
+
+# Obsolete Azure troubleshooting tools (kept locally only)
+deploy-azure.ps1
+diagnose-azure.ps1
+probe-function-host.ps1
+repair-function-host.ps1
+rotate-azure-secrets.ps1
 
 # Logs and temporary files
 *.log
@@ -22,6 +31,6 @@ temp/
 
 # Optional dependency/build output
 node_modules/
+.tools/
 dist/
 coverage/
-

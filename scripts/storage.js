@@ -117,6 +117,132 @@ function resetPlaylistSettings() {
   writeSpotifyLog(["playlist settings reset", "default playlists loaded"]);
 }
 
+/* ---------------- Cloud Weather Diary: Local Drafts ---------------- */
+
+const LOCAL_DIARY_STORAGE_KEY = "weatherspot_local_diary_posts_v1";
+const LOCAL_DIARY_RETENTION_MS = 7 * 24 * 60 * 60 * 1000;
+const DIARY_REPORTER_STORAGE_KEY = "weatherspot_diary_reporter_v1";
+const REPORTED_POSTS_STORAGE_KEY = "weatherspot_reported_posts_v1";
+
+function getOrCreateDiaryReporterId() {
+  const saved = String(localStorage.getItem(DIARY_REPORTER_STORAGE_KEY) || "").trim();
+  if (/^[a-z0-9-]{16,100}$/i.test(saved)) return saved;
+
+  const generated = globalThis.crypto?.randomUUID
+    ? globalThis.crypto.randomUUID()
+    : `device-${Date.now()}-${Math.random().toString(16).slice(2)}`;
+  localStorage.setItem(DIARY_REPORTER_STORAGE_KEY, generated);
+  return generated;
+}
+
+function loadReportedPostIds() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(REPORTED_POSTS_STORAGE_KEY) || "[]");
+    return Array.isArray(saved) ? saved.filter((id) => typeof id === "string").slice(0, 100) : [];
+  } catch {
+    return [];
+  }
+}
+
+function hasLocallyReportedPost(postId) {
+  return loadReportedPostIds().includes(String(postId || ""));
+}
+
+function rememberLocallyReportedPost(postId) {
+  const id = String(postId || "").trim();
+  if (!id) return;
+
+  const ids = loadReportedPostIds().filter((savedId) => savedId !== id);
+  ids.unshift(id);
+  localStorage.setItem(REPORTED_POSTS_STORAGE_KEY, JSON.stringify(ids.slice(0, 100)));
+}
+
+function limitLocalDiaryText(value, maxLength) {
+  return Array.from(String(value || "").trim()).slice(0, maxLength).join("");
+}
+
+function normalizeLocalDiaryPost(post) {
+  if (!post || typeof post !== "object") return null;
+
+  const createdAtMs = Date.parse(post.createdAt);
+  const expiresAtMs = Date.parse(post.expiresAt);
+  const name = limitLocalDiaryText(post.name, 20);
+  const message = limitLocalDiaryText(post.message, 30);
+  const city = limitLocalDiaryText(post.city, 80);
+  const weather = limitLocalDiaryText(post.weather, 40);
+  const trackTitle = limitLocalDiaryText(post.track?.title, 200);
+  const trackArtist = limitLocalDiaryText(post.track?.artist, 200);
+
+  if (!post.id || !name || !message || !city || !weather || !trackTitle) return null;
+  if (!Number.isFinite(createdAtMs) || !Number.isFinite(expiresAtMs)) return null;
+
+  return {
+    id: limitLocalDiaryText(post.id, 100),
+    name,
+    message,
+    cityId: limitLocalDiaryText(post.cityId, 40),
+    city,
+    weather,
+    track: {
+      id: limitLocalDiaryText(post.track?.id, 100),
+      title: trackTitle,
+      artist: trackArtist,
+      imageUrl: String(post.track?.imageUrl || "").slice(0, 1000),
+      spotifyUrl: String(post.track?.spotifyUrl || "").slice(0, 1000)
+    },
+    createdAt: new Date(createdAtMs).toISOString(),
+    expiresAt: new Date(expiresAtMs).toISOString()
+  };
+}
+
+function writeLocalDiaryPosts(posts) {
+  localStorage.setItem(LOCAL_DIARY_STORAGE_KEY, JSON.stringify(posts));
+}
+
+function loadLocalDiaryPosts(now = Date.now()) {
+  let rawPosts = [];
+  let storageNeedsRewrite = false;
+
+  try {
+    const saved = JSON.parse(localStorage.getItem(LOCAL_DIARY_STORAGE_KEY) || "[]");
+    rawPosts = Array.isArray(saved) ? saved : [];
+    storageNeedsRewrite = !Array.isArray(saved);
+  } catch {
+    rawPosts = [];
+    storageNeedsRewrite = true;
+  }
+
+  const activePosts = rawPosts
+    .map(normalizeLocalDiaryPost)
+    .filter((post) => post && Date.parse(post.expiresAt) > now)
+    .sort((a, b) => Date.parse(b.createdAt) - Date.parse(a.createdAt));
+
+  if (storageNeedsRewrite || activePosts.length !== rawPosts.length) {
+    writeLocalDiaryPosts(activePosts);
+  }
+
+  return activePosts;
+}
+
+function saveLocalDiaryPost(draft) {
+  const now = Date.now();
+  const post = normalizeLocalDiaryPost({
+    ...draft,
+    id: crypto.randomUUID ? crypto.randomUUID() : `local-${now}-${Math.random().toString(16).slice(2)}`,
+    createdAt: new Date(now).toISOString(),
+    expiresAt: new Date(now + LOCAL_DIARY_RETENTION_MS).toISOString()
+  });
+
+  if (!post) {
+    throw new Error("仮投稿データが不完全です");
+  }
+
+  const posts = loadLocalDiaryPosts(now);
+  posts.unshift(post);
+  writeLocalDiaryPosts(posts);
+  return post;
+}
+
 /* ---------------- Spotify OAuth PKCE ---------------- */
 
 function getDefaultRedirectUri() {

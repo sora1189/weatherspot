@@ -174,3 +174,152 @@ body:not(.is-booting) .app-menu-layer .floating-menu-button {
   visibility: visible !important;
   pointer-events: auto !important;
 }
+
+/* コード風ロード後のGIFトランジション */
+.gif-loading-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 3050;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 50% 45%, rgba(0, 246, 255, 0.09), transparent 38%),
+    #02060b;
+  color: #d9fbff;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 1.05s ease, visibility 0s linear 1.05s;
+}
+
+.gif-loading-screen::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.18;
+  background: repeating-linear-gradient(
+    to bottom,
+    transparent 0,
+    transparent 3px,
+    rgba(117, 247, 255, 0.14) 4px
+  );
+}
+
+.gif-loading-screen[aria-hidden="false"] {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transition: opacity 0.35s ease;
+}
+
+.gif-loading-screen.is-leaving {
+  opacity: 0;
+  visibility: visible;
+  pointer-events: none;
+  transition: opacity 1.05s ease;
+}
+
+.gif-loading-content {
+  position: relative;
+  z-index: 1;
+  width: min(390px, 88vw);
+}
+
+.gif-loading-media {
+  width: min(320px, 76vw);
+  aspect-ratio: 1;
+  margin: 0 auto 28px;
+  overflow: hidden;
+  border: 1px solid rgba(104, 236, 255, 0.48);
+  border-radius: 8px;
+  background: #000;
+  box-shadow:
+    0 0 0 1px rgba(104, 236, 255, 0.08) inset,
+    0 0 36px rgba(0, 224, 255, 0.14),
+    0 24px 70px rgba(0, 0, 0, 0.72);
+}
+
+.gif-loading-media .tenor-gif-embed,
+.gif-loading-media iframe {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.gif-loading-status {
+  font-family: Consolas, "Cascadia Mono", "Courier New", monospace;
+}
+
+.gif-loading-label {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 9px;
+  color: #7ff5ff;
+  font-size: 0.76rem;
+  letter-spacing: 0.12em;
+}
+
+.gif-loading-track {
+  position: relative;
+  height: 10px;
+  overflow: hidden;
+  border: 1px solid rgba(118, 241, 255, 0.52);
+  background: rgba(1, 13, 20, 0.92);
+  box-shadow: 0 0 18px rgba(0, 223, 255, 0.12) inset;
+}
+
+.gif-loading-fill {
+  display: block;
+  width: 0;
+  height: 100%;
+  background: linear-gradient(90deg, #00a7bd, #77f6ff 76%, #e5fdff);
+  box-shadow: 0 0 16px rgba(91, 241, 255, 0.7);
+}
+
+.gif-loading-screen.is-active .gif-loading-fill {
+  animation: gifLoadingProgress 3.4s cubic-bezier(0.18, 0.72, 0.22, 1) forwards;
+}
+
+.gif-loading-status p {
+  margin: 10px 0 0;
+  color: rgba(193, 224, 230, 0.62);
+  font-size: 0.68rem;
+  letter-spacing: 0.1em;
+  text-align: center;
+}
+
+@keyframes gifLoadingProgress {
+  0% { width: 0; }
+  20% { width: 14%; }
+  52% { width: 56%; }
+  78% { width: 81%; }
+  100% { width: 100%; }
+}
+
+@media (max-width: 520px) {
+  .gif-loading-screen {
+    padding: 18px;
+  }
+
+  .gif-loading-media {
+    margin-bottom: 22px;
+  }
+
+  .gif-loading-label {
+    font-size: 0.68rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gif-loading-screen,
+  .gif-loading-screen.is-leaving {
+    transition-duration: 0.2s;
+  }
+
+  .gif-loading-screen.is-active .gif-loading-fill {
+    animation-timing-function: linear;
+  }
+}

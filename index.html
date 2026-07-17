@@ -7,7 +7,7 @@
   <link rel="stylesheet" href="styles/boot.css" />
   <link rel="stylesheet" href="styles/dashboard.css" />
   <link rel="stylesheet" href="styles/window.css" />
-  <link rel="stylesheet" href="styles/menu.css" />
+  <link rel="stylesheet" href="styles/menu.css?v=phase7-admin-1" />
   <link rel="stylesheet" href="styles/responsive.css" />
   <script src="https://sdk.scdn.co/spotify-player.js"></script>
 </head>
@@ -27,6 +27,35 @@
         <span>loading...</span>
       </div>
       <pre id="loadingCode">&gt; initializing...</pre>
+    </div>
+  </section>
+
+  <section class="gif-loading-screen" id="gifLoadingScreen" aria-hidden="true">
+    <div class="gif-loading-content">
+      <div class="gif-loading-media">
+        <div class="tenor-gif-embed" data-postid="14653109790304246871" data-share-method="host" data-aspect-ratio="1" data-width="100%">
+          <a href="https://tenor.com/view/dedsec-gif-14653109790304246871">Dedsec GIF</a>
+          from <a href="https://tenor.com/search/dedsec-gifs">Dedsec GIFs</a>
+        </div>
+      </div>
+      <div class="gif-loading-status" aria-live="polite">
+        <div class="gif-loading-label">
+          <span>CONNECTING TO WEATHERSPOT</span>
+          <span id="gifLoadingPercent">0%</span>
+        </div>
+        <div
+          class="gif-loading-track"
+          id="gifLoadingProgress"
+          role="progressbar"
+          aria-label="WeatherSpotを読み込み中"
+          aria-valuemin="0"
+          aria-valuemax="100"
+          aria-valuenow="0"
+        >
+          <span class="gif-loading-fill"></span>
+        </div>
+        <p>SECURE LINK / INITIALIZING INTERFACE...</p>
+      </div>
     </div>
   </section>
 
@@ -230,22 +259,37 @@
         <button id="closeMusicDrawerButton" class="drawer-close-button" type="button">×</button>
       </div>
 
+      <div class="drawer-tabs" role="tablist" aria-label="メニューのカテゴリ">
+        <button
+          id="drawerTabShareButton"
+          class="drawer-tab-button is-active"
+          type="button"
+          role="tab"
+          aria-selected="true"
+          aria-controls="drawerTabShare"
+          data-drawer-tab="share">SHARE</button>
+        <button
+          id="drawerTabMusicButton"
+          class="drawer-tab-button"
+          type="button"
+          role="tab"
+          aria-selected="false"
+          aria-controls="drawerTabMusic"
+          tabindex="-1"
+          data-drawer-tab="music">MUSIC</button>
+        <button
+          id="drawerTabSettingsButton"
+          class="drawer-tab-button"
+          type="button"
+          role="tab"
+          aria-selected="false"
+          aria-controls="drawerTabSettings"
+          tabindex="-1"
+          data-drawer-tab="settings">SETTINGS</button>
+      </div>
+
       <div class="drawer-content">
-
-        <section class="drawer-panel">
-          <div class="console-topbar">
-            <span>view/window_mode</span>
-            <span>display setting</span>
-          </div>
-
-          <div class="drawer-panel-body">
-            <p class="small-label">VIEW MODE</p>
-            <p class="drawer-description">
-              窓枠モードをONにすると、都市情報や数値表示を隠して、窓枠の景色だけを大きく表示します。
-            </p>
-            <button id="windowOnlyModeButton" type="button">窓枠モード: OFF</button>
-          </div>
-        </section>
+        <div id="drawerTabMusic" class="drawer-tab-panel" role="tabpanel" aria-labelledby="drawerTabMusicButton" hidden>
         <section class="drawer-panel music-user-panel">
           <div class="console-topbar">
             <span>spotify/weather_bgm</span>
@@ -274,22 +318,159 @@
               <button id="nextTrackButton" type="button">次へ</button>
               <button id="repeatModeButton" type="button">ループ: OFF</button>
               <button id="shuffleButton" type="button">シャッフル: OFF</button>
-              <button id="spotifyLogoutButton" type="button">ログアウト</button>
             </div>
 
+            <div class="spotify-note">
+              <p>&gt; ユーザー操作: Spotifyログイン → 天気BGMを再生</p>
+              <p>&gt; プレイリスト変更とログアウトはSETTINGSにあります</p>
+              <p>&gt; 再生制御はSpotify Premiumが必要になる場合があります</p>
+            </div>
+          </div>
+        </section>
+        </div>
+
+        <div id="drawerTabShare" class="drawer-tab-panel is-active" role="tabpanel" aria-labelledby="drawerTabShareButton">
+        <section class="current-track-panel drawer-panel" aria-labelledby="currentTrackHeading">
+          <div class="current-track-heading">
+            <div>
+              <p class="small-label" id="currentTrackHeading">NOW PLAYING</p>
+              <span id="currentTrackPlaybackState">Spotifyへログインして曲を取得してください</span>
+            </div>
+            <span class="spotify-source-label">FROM SPOTIFY</span>
+          </div>
+
+          <div class="current-track-content" aria-live="polite">
+            <div class="current-track-artwork-wrap">
+              <img id="currentTrackImage" class="current-track-artwork" alt="" hidden />
+              <div id="currentTrackPlaceholder" class="current-track-placeholder" aria-hidden="true">♪</div>
+            </div>
+            <div class="current-track-meta">
+              <strong id="currentTrackTitle">曲はまだ取得されていません</strong>
+              <span id="currentTrackArtist">--</span>
+              <a id="currentTrackSpotifyLink" href="#" target="_blank" rel="noopener noreferrer" hidden>
+                Spotifyで曲を開く
+              </a>
+            </div>
+          </div>
+
+          <button id="getCurrentTrackButton" type="button">現在の曲を取得</button>
+        </section>
+
+        <section class="drawer-panel share-diary-panel" aria-labelledby="shareDiaryHeading">
+          <div class="console-topbar">
+            <span>social/cloud_weather_diary</span>
+            <span>phase 05</span>
+          </div>
+
+          <div class="drawer-panel-body">
+            <p class="small-label" id="shareDiaryHeading">CLOUD WEATHER DIARY</p>
+            <p class="drawer-description">
+              今聴いている曲と、その場所の天気をひとことと一緒に共有します。
+              曲・天気・都市は現在の画面から自動入力されます。
+            </p>
+
+            <div class="share-context-grid" aria-label="投稿に含まれる情報">
+              <div>
+                <span>CITY</span>
+                <strong id="shareCityPreview">--</strong>
+              </div>
+              <div>
+                <span>WEATHER</span>
+                <strong id="shareWeatherPreview">--</strong>
+              </div>
+              <div class="share-context-track">
+                <span>TRACK</span>
+                <strong id="shareTrackPreview">曲を取得してください</strong>
+                <small id="shareArtistPreview">--</small>
+              </div>
+            </div>
+
+            <form id="shareDiaryForm" class="share-diary-form" novalidate>
+              <label for="shareNameInput">
+                名前
+                <small>20文字まで</small>
+              </label>
+              <input
+                id="shareNameInput"
+                name="displayName"
+                type="text"
+                maxlength="20"
+                autocomplete="nickname"
+                placeholder="例：sora"
+                required
+              />
+
+              <label for="shareMessageInput" class="share-message-label">
+                ひとこと
+                <span id="shareMessageCounter">0 / 30</span>
+              </label>
+              <textarea
+                id="shareMessageInput"
+                name="message"
+                rows="3"
+                maxlength="30"
+                placeholder="今の気分を30文字までで入力"
+                required
+              ></textarea>
+
+              <button id="prepareShareButton" type="submit" disabled>投稿内容を確認</button>
+              <p id="shareFormStatus" class="share-form-status" aria-live="polite">
+                名前・ひとこと・再生中の曲がそろうと確認できます。
+              </p>
+            </form>
+
+            <p class="local-draft-summary">
+              Azure API: <strong id="cloudApiStatus">接続確認中</strong>
+              <span>（投稿は保存から7日で自動削除）</span>
+            </p>
+          </div>
+        </section>
+
+        </div>
+
+        <div id="drawerTabSettings" class="drawer-tab-panel" role="tabpanel" aria-labelledby="drawerTabSettingsButton" hidden>
+        <section class="drawer-panel">
+          <div class="console-topbar">
+            <span>view/window_mode</span>
+            <span>display setting</span>
+          </div>
+          <div class="drawer-panel-body">
+            <p class="small-label">VIEW MODE</p>
+            <p class="drawer-description">
+              窓枠モードをONにすると、都市情報や数値表示を隠して、窓枠の景色だけを大きく表示します。
+            </p>
+            <button id="windowOnlyModeButton" type="button">窓枠モード: OFF</button>
+          </div>
+        </section>
+
+        <section class="drawer-panel settings-account-panel">
+          <div class="console-topbar">
+            <span>spotify/account_settings</span>
+            <span>preferences</span>
+          </div>
+          <div class="drawer-panel-body">
+            <p class="small-label">ACCOUNT &amp; AUTO PLAY</p>
             <label class="check-row">
               <input id="autoMusicSwitch" type="checkbox" />
               <span>天気更新時にBGMを自動切り替えする</span>
             </label>
-
-            <div class="spotify-note">
-              <p>&gt; ユーザー操作: Spotifyログイン → 天気BGMを再生</p>
-              <p>&gt; プレイリスト変更と窓枠モードはMENU内に残しています</p>
-              <p>&gt; 再生制御はSpotify Premiumが必要になる場合があります</p>
-            </div>
-
+            <button id="spotifyLogoutButton" type="button">Spotifyからログアウト</button>
             <pre id="spotifyLog">&gt; spotify user panel initialized
 &gt; waiting for login...</pre>
+          </div>
+        </section>
+
+        <section class="drawer-panel host-control-panel">
+          <div class="console-topbar">
+            <span>social/host_control</span>
+            <span>phase 07</span>
+          </div>
+          <div class="drawer-panel-body">
+            <p class="small-label">HOST MODERATION</p>
+            <p class="drawer-description">
+              管理者キーを持つホストだけが、通報一覧の確認と投稿の削除を行えます。
+            </p>
+            <button id="openAdminPanelButton" type="button">管理者モードを開く</button>
           </div>
         </section>
 
@@ -334,13 +515,173 @@
           <pre id="systemLog">&gt; system initialized
 &gt; waiting for command...</pre>
         </section>
+        </div>
       </div>
     </aside>
+
+    <button
+      id="liveFeedButton"
+      class="live-feed-button"
+      type="button"
+      aria-controls="liveFeedPanel"
+      aria-expanded="false"
+    >
+      <span>LIVE<br />FEED</span>
+      <strong id="liveFeedBadge">0</strong>
+    </button>
+
+    <aside id="liveFeedPanel" class="live-feed-panel" aria-hidden="true" aria-labelledby="cloudTimelineHeading">
+      <div class="live-feed-header">
+        <div>
+          <p class="small-label">WEATHERSPOT SOCIAL</p>
+          <h2 id="cloudTimelineHeading">LIVE FEED</h2>
+          <span id="cloudTimelineCount">0 POSTS</span>
+        </div>
+        <button id="closeLiveFeedButton" class="live-feed-close-button" type="button" aria-label="ライブフィードを閉じる">×</button>
+      </div>
+
+      <div class="live-feed-controls">
+        <p id="cloudTimelineStatus" class="cloud-timeline-status" role="status" aria-live="polite">
+          Azureから投稿を読み込んでいます。
+        </p>
+        <button id="refreshCloudTimelineButton" type="button">再読み込み</button>
+      </div>
+
+      <div
+        id="cloudTimelineList"
+        class="cloud-timeline-list live-feed-list"
+        role="feed"
+        aria-label="クラウド天気日記の投稿一覧"
+        aria-busy="true"
+        tabindex="0"
+      ></div>
+    </aside>
+
+    <div id="reportDialogLayer" class="report-dialog-layer" hidden>
+      <div id="reportDialogBackdrop" class="report-dialog-backdrop"></div>
+      <section
+        id="reportDialog"
+        class="report-dialog"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="reportDialogHeading"
+      >
+        <div class="console-topbar">
+          <span>social/report</span>
+          <span>phase 06</span>
+        </div>
+        <div class="report-dialog-body">
+          <p class="small-label">REPORT POST</p>
+          <h2 id="reportDialogHeading">この投稿を通報しますか？</h2>
+          <p class="report-dialog-note">管理者が内容を確認します。通報しただけでは投稿は削除されません。</p>
+
+          <label for="reportReasonSelect">通報理由</label>
+          <select id="reportReasonSelect">
+            <option value="abuse">誹謗中傷</option>
+            <option value="sexual">卑猥な内容</option>
+            <option value="spam">スパム</option>
+            <option value="other">その他</option>
+          </select>
+
+          <p id="reportDialogStatus" class="report-dialog-status" role="status" aria-live="polite"></p>
+
+          <div class="report-dialog-actions">
+            <button id="cancelReportButton" type="button">キャンセル</button>
+            <button id="submitReportButton" type="button">通報を送信</button>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <div id="shareConfirmLayer" class="share-confirm-layer" hidden>
+      <div id="shareConfirmBackdrop" class="share-confirm-backdrop"></div>
+      <section
+        id="shareConfirmDialog"
+        class="share-confirm-dialog"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="shareConfirmHeading">
+        <div class="console-topbar">
+          <span>social/post_confirm</span>
+          <span>azure cloud</span>
+        </div>
+        <div class="share-confirm-body">
+          <p class="small-label">CONFIRM POST</p>
+          <h2 id="shareConfirmHeading">この内容を共有しますか？</h2>
+
+          <dl class="share-confirm-list">
+            <div>
+              <dt>NAME</dt>
+              <dd id="confirmShareName">--</dd>
+            </div>
+            <div>
+              <dt>MESSAGE</dt>
+              <dd id="confirmShareMessage">--</dd>
+            </div>
+            <div>
+              <dt>CITY / WEATHER</dt>
+              <dd><span id="confirmShareCity">--</span> / <span id="confirmShareWeather">--</span></dd>
+            </div>
+            <div>
+              <dt>TRACK</dt>
+              <dd>
+                <strong id="confirmShareTrack">--</strong>
+                <span id="confirmShareArtist">--</span>
+              </dd>
+            </div>
+          </dl>
+
+          <p class="share-confirm-note">
+            投稿はAzureに保存され、公開タイムラインから取得できる状態になります。保存から7日後に自動削除されます。
+          </p>
+
+          <div class="share-confirm-actions">
+            <button id="cancelShareConfirmButton" type="button">入力に戻る</button>
+            <button id="publishShareButton" type="button">Azureに共有</button>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <div id="adminPanelLayer" class="admin-panel-layer" hidden>
+      <div id="adminPanelBackdrop" class="admin-panel-backdrop"></div>
+      <section id="adminPanel" class="admin-panel" role="dialog" aria-modal="true" aria-labelledby="adminPanelHeading">
+        <div class="admin-panel-header">
+          <div>
+            <p class="small-label">WEATHERSPOT HOST</p>
+            <h2 id="adminPanelHeading">MODERATION CONSOLE</h2>
+          </div>
+          <button id="closeAdminPanelButton" class="admin-panel-close" type="button" aria-label="管理者画面を閉じる">×</button>
+        </div>
+
+        <div id="adminLoginView" class="admin-login-view">
+          <label for="adminKeyInput">管理者キー</label>
+          <input id="adminKeyInput" type="password" autocomplete="off" spellcheck="false" placeholder="ローカルの管理者キーを貼り付け" />
+          <button id="adminLoginButton" type="button">認証して通報一覧を開く</button>
+          <p class="admin-security-note">キーはブラウザに保存せず、この画面を閉じるまでの間だけ使用します。</p>
+        </div>
+
+        <div id="adminReportsView" class="admin-reports-view" hidden>
+          <div class="admin-reports-toolbar">
+            <span id="adminReportCount">0 REPORTS</span>
+            <div>
+              <button id="refreshAdminReportsButton" type="button">再読み込み</button>
+              <button id="adminLogoutButton" type="button">管理者モード終了</button>
+            </div>
+          </div>
+          <div id="adminReportList" class="admin-report-list" aria-live="polite"></div>
+        </div>
+
+        <p id="adminPanelStatus" class="admin-panel-status" role="status" aria-live="polite"></p>
+      </section>
+    </div>
   </div>
 
-<script src="scripts/storage.js"></script>
+<script type="text/javascript" async src="https://tenor.com/embed.js"></script>
+<script src="scripts/storage.js?v=phase6-report-1"></script>
+<script src="scripts/api.js?v=phase7-admin-2"></script>
 <script src="scripts/weather.js"></script>
 <script src="scripts/spotify.js"></script>
-<script src="scripts/ui.js"></script>
+  <script src="scripts/ui.js?v=phase7-admin-1"></script>
 </body>
 </html>
