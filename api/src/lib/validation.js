@@ -4,6 +4,7 @@ const LIMITS = Object.freeze({
   cityId: 40,
   city: 80,
   weather: 40,
+  clientId: 100,
   trackId: 100,
   trackTitle: 200,
   trackArtist: 200
@@ -55,6 +56,7 @@ function validateDiaryPost(body) {
   const cityId = readRequiredText(body, "cityId", LIMITS.cityId, errors);
   const city = readRequiredText(body, "city", LIMITS.city, errors);
   const weather = readRequiredText(body, "weather", LIMITS.weather, errors);
+  const clientId = readRequiredText(body, "clientId", LIMITS.clientId, errors);
   let track = null;
 
   if (body?.track != null) {
@@ -78,6 +80,10 @@ function validateDiaryPost(body) {
     errors.push("cityIdの形式が正しくありません");
   }
 
+  if (clientId && !/^[a-z0-9-]{16,100}$/i.test(clientId)) {
+    errors.push("clientIdの形式が正しくありません");
+  }
+
   return {
     valid: errors.length === 0,
     errors,
@@ -87,6 +93,7 @@ function validateDiaryPost(body) {
       cityId,
       city,
       weather,
+      clientId,
       track
     }
   };

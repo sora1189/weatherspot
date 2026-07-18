@@ -9,6 +9,7 @@ function validDraft() {
     cityId: "tokyo",
     city: "東京 / 日本",
     weather: "霧雨",
+    clientId: "123e4567-e89b-12d3-a456-426614174001",
     track: {
       id: "track-1",
       title: "確認画面テスト曲",
@@ -42,6 +43,15 @@ test("rejects an incomplete track when track data is supplied", () => {
 
   assert.equal(result.valid, false);
   assert.match(result.errors.join(" "), /artistは必須/);
+});
+
+test("rejects a post without a client id", () => {
+  const draft = validDraft();
+  delete draft.clientId;
+  const result = validateDiaryPost(draft);
+
+  assert.equal(result.valid, false);
+  assert.match(result.errors.join(" "), /clientIdは必須/);
 });
 
 test("rejects an over-30-character message", () => {

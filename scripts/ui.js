@@ -1312,7 +1312,10 @@ function closeShareConfirmDialog(event, { restoreFocus = true } = {}) {
 async function publishPendingShareDraft() {
   if (!pendingShareDraft) return;
 
-  const draftToPublish = pendingShareDraft;
+  const draftToPublish = {
+    ...pendingShareDraft,
+    clientId: getOrCreateDiaryReporterId()
+  };
   elements.publishShareButton.disabled = true;
   elements.publishShareButton.textContent = "送信中...";
 
@@ -1328,15 +1331,15 @@ async function publishPendingShareDraft() {
     updateShareContextPreview();
     closeShareConfirmDialog(null, { restoreFocus: false });
 
-    elements.shareFormStatus.textContent = `Azureに共有しました。${expiresLabel}に自動削除されます。`;
+    elements.shareFormStatus.textContent = `共有しました。${expiresLabel}に自動削除されます。`;
     elements.shareFormStatus.classList.add("is-ready");
     elements.cloudApiStatus.textContent = "接続済み";
     elements.shareNameInput.focus();
     refreshCloudDiaryTimeline({ announce: false });
   } catch (error) {
     elements.shareFormStatus.textContent = error.status === 429
-      ? "投稿が混み合っています。少し待ってからもう一度お試しください。"
-      : `Azureへ投稿できませんでした。${error.message}`;
+      ? error.message
+      : `共有できませんでした。${error.message}`;
     elements.shareFormStatus.classList.remove("is-ready");
     elements.shareFormStatus.classList.add("is-error");
     if (elements.cloudApiStatus) elements.cloudApiStatus.textContent = "接続エラー";
@@ -1344,7 +1347,7 @@ async function publishPendingShareDraft() {
     console.error(error);
   } finally {
     elements.publishShareButton.disabled = false;
-    elements.publishShareButton.textContent = "Azureに共有";
+    elements.publishShareButton.textContent = "共有";
   }
 }
 

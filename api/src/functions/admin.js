@@ -63,7 +63,10 @@ async function listAdminReports(request, context) {
       let post = null;
       try {
         const response = await container.item(group.postId, group.postId).read();
-        post = response.resource || null;
+        if (response.resource) {
+          const { clientHash, ...publicPost } = response.resource;
+          post = publicPost;
+        }
       } catch (error) {
         if (error?.code !== 404 && error?.statusCode !== 404) throw error;
       }
