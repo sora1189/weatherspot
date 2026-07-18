@@ -159,38 +159,6 @@ powershell -ExecutionPolicy Bypass -File .\deploy-azure-flex.ps1
 | `DELETE` | `/api/moderation/posts/{postId}` | 管理者による投稿削除 |
 | `DELETE` | `/api/moderation/reports/{postId}` | 管理者による通報の問題なし処理 |
 
-管理APIには、サーバー側で検証される管理者キーが必要です。
 
-## テスト
-
-```powershell
-cd api
-pnpm install
-pnpm run check
-pnpm test
-```
-
-入力値検証、管理者認証、投稿回数制限を自動テストしています。
-
-## GitHub Pagesで公開する
-
-1. 秘密情報が除外されていることを確認します。
-2. 変更をGitHubへpushします。
-3. GitHubリポジトリの`Settings → Pages`を開きます。
-4. `Deploy from a branch`、ブランチ`main`、フォルダー`/(root)`を選びます。
-5. 公開URLをSpotify Developer DashboardのRedirect URIへ追加します。
-
-## セキュリティと運用上の注意
-
-次のファイルや値はGitHubへ公開しないでください。
-
-- `weatherspot-admin-key.local`
-- `api/local.settings.json`
-- Cosmos DBキー、Azure Storageキー
-- Spotify Client Secret、アクセストークン、更新トークン
-
-Spotify Client IDは公開識別子なのでブラウザコードに含められますが、Spotify Client Secretは含めてはいけません。
-
-投稿内容は文字列として検証・表示し、Cosmos DBへの問い合わせにはパラメーターを使用しています。ただし、匿名投稿の識別子はブラウザ側で生成しているため、10分間に5件の制限は完全な本人確認や強力な攻撃防止を目的としたものではありません。
 
 詳しくは[セキュリティ上の注意](SECURITY.md)を参照してください。
