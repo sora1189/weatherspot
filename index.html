@@ -300,7 +300,6 @@
             <p class="small-label">MUSIC</p>
             <p class="drawer-description">
               Spotifyにログインすると、現在の天気に合わせたBGMを再生できます。
-              Client IDやRedirect URIなどの開発者向け設定は画面に表示しません。
             </p>
 
             <div class="music-now drawer-now">
@@ -365,8 +364,8 @@
           <div class="drawer-panel-body">
             <p class="small-label" id="shareDiaryHeading">CLOUD WEATHER DIARY</p>
             <p class="drawer-description">
-              今聴いている曲と、その場所の天気をひとことと一緒に共有します。
-              曲・天気・都市は現在の画面から自動入力されます。
+              その場所の天気を、ひとことと一緒に共有します。
+              再生中の曲がある場合は曲も自動入力されます。曲なしでも投稿できます。
             </p>
 
             <div class="share-context-grid" aria-label="投稿に含まれる情報">
@@ -380,8 +379,8 @@
               </div>
               <div class="share-context-track">
                 <span>TRACK</span>
-                <strong id="shareTrackPreview">曲を取得してください</strong>
-                <small id="shareArtistPreview">--</small>
+                <strong id="shareTrackPreview">曲なしで投稿できます</strong>
+                <small id="shareArtistPreview">OPTIONAL</small>
               </div>
             </div>
 
@@ -415,7 +414,7 @@
 
               <button id="prepareShareButton" type="submit" disabled>投稿内容を確認</button>
               <p id="shareFormStatus" class="share-form-status" aria-live="polite">
-                名前・ひとこと・再生中の曲がそろうと確認できます。
+                名前・ひとこと・天気がそろうと確認できます。曲は任意です。
               </p>
             </form>
 
@@ -623,7 +622,7 @@
               <dd><span id="confirmShareCity">--</span> / <span id="confirmShareWeather">--</span></dd>
             </div>
             <div>
-              <dt>TRACK</dt>
+              <dt>TRACK（任意）</dt>
               <dd>
                 <strong id="confirmShareTrack">--</strong>
                 <span id="confirmShareArtist">--</span>
@@ -678,10 +677,10 @@
   </div>
 
 <script type="text/javascript" async src="https://tenor.com/embed.js"></script>
-<script src="scripts/storage.js?v=phase6-report-1"></script>
-<script src="scripts/api.js?v=phase7-admin-2"></script>
+<script src="scripts/storage.js?v=phase8-optional-track-1"></script>
+<script src="scripts/api.js?v=phase8-optional-track-1"></script>
 <script src="scripts/weather.js"></script>
 <script src="scripts/spotify.js"></script>
-  <script src="scripts/ui.js?v=phase7-admin-1"></script>
+  <script src="scripts/ui.js?v=phase8-optional-track-1"></script>
 </body>
 </html>

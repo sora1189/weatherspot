@@ -173,7 +173,8 @@ function normalizeLocalDiaryPost(post) {
   const trackTitle = limitLocalDiaryText(post.track?.title, 200);
   const trackArtist = limitLocalDiaryText(post.track?.artist, 200);
 
-  if (!post.id || !name || !message || !city || !weather || !trackTitle) return null;
+  if (!post.id || !name || !message || !city || !weather) return null;
+  if (post.track && (!trackTitle || !trackArtist)) return null;
   if (!Number.isFinite(createdAtMs) || !Number.isFinite(expiresAtMs)) return null;
 
   return {
@@ -183,13 +184,15 @@ function normalizeLocalDiaryPost(post) {
     cityId: limitLocalDiaryText(post.cityId, 40),
     city,
     weather,
-    track: {
-      id: limitLocalDiaryText(post.track?.id, 100),
-      title: trackTitle,
-      artist: trackArtist,
-      imageUrl: String(post.track?.imageUrl || "").slice(0, 1000),
-      spotifyUrl: String(post.track?.spotifyUrl || "").slice(0, 1000)
-    },
+    track: post.track
+      ? {
+          id: limitLocalDiaryText(post.track.id, 100),
+          title: trackTitle,
+          artist: trackArtist,
+          imageUrl: String(post.track.imageUrl || "").slice(0, 1000),
+          spotifyUrl: String(post.track.spotifyUrl || "").slice(0, 1000)
+        }
+      : null,
     createdAt: new Date(createdAtMs).toISOString(),
     expiresAt: new Date(expiresAtMs).toISOString()
   };

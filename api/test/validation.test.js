@@ -26,6 +26,24 @@ test("valid post is normalized", () => {
   assert.equal(result.value.track.spotifyUrl, "https://open.spotify.com/track/test");
 });
 
+test("accepts a post without a track", () => {
+  const draft = validDraft();
+  draft.track = null;
+  const result = validateDiaryPost(draft);
+
+  assert.equal(result.valid, true);
+  assert.equal(result.value.track, null);
+});
+
+test("rejects an incomplete track when track data is supplied", () => {
+  const draft = validDraft();
+  draft.track = { title: "曲名だけ" };
+  const result = validateDiaryPost(draft);
+
+  assert.equal(result.valid, false);
+  assert.match(result.errors.join(" "), /artistは必須/);
+});
+
 test("rejects an over-30-character message", () => {
   const draft = validDraft();
   draft.message = "あ".repeat(31);

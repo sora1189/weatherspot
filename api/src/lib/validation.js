@@ -55,9 +55,24 @@ function validateDiaryPost(body) {
   const cityId = readRequiredText(body, "cityId", LIMITS.cityId, errors);
   const city = readRequiredText(body, "city", LIMITS.city, errors);
   const weather = readRequiredText(body, "weather", LIMITS.weather, errors);
-  const trackTitle = readRequiredText(body?.track, "title", LIMITS.trackTitle, errors);
-  const trackArtist = readRequiredText(body?.track, "artist", LIMITS.trackArtist, errors);
-  const trackId = normalizeText(body?.track?.id).slice(0, LIMITS.trackId);
+  let track = null;
+
+  if (body?.track != null) {
+    if (typeof body.track !== "object" || Array.isArray(body.track)) {
+      errors.push("trackの形式が正しくありません");
+    } else {
+      const trackTitle = readRequiredText(body.track, "title", LIMITS.trackTitle, errors);
+      const trackArtist = readRequiredText(body.track, "artist", LIMITS.trackArtist, errors);
+
+      track = {
+        id: normalizeText(body.track.id).slice(0, LIMITS.trackId),
+        title: trackTitle,
+        artist: trackArtist,
+        imageUrl: readSafeUrl(body.track.imageUrl, new Set(["i.scdn.co"])),
+        spotifyUrl: readSafeUrl(body.track.spotifyUrl, new Set(["open.spotify.com"]))
+      };
+    }
+  }
 
   if (cityId && !/^[a-z0-9-]+$/i.test(cityId)) {
     errors.push("cityIdの形式が正しくありません");
@@ -72,13 +87,7 @@ function validateDiaryPost(body) {
       cityId,
       city,
       weather,
-      track: {
-        id: trackId,
-        title: trackTitle,
-        artist: trackArtist,
-        imageUrl: readSafeUrl(body?.track?.imageUrl, new Set(["i.scdn.co"])),
-        spotifyUrl: readSafeUrl(body?.track?.spotifyUrl, new Set(["open.spotify.com"]))
-      }
+      track
     }
   };
 }

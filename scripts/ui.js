@@ -748,7 +748,7 @@ function getShareFormValidation() {
   const name = elements.shareNameInput?.value.trim() || "";
   const message = elements.shareMessageInput?.value.trim() || "";
   const context = getCurrentShareContext();
-  const valid = Boolean(name && message && context.track && lastWeatherInfo && context.cityId);
+  const valid = Boolean(name && message && lastWeatherInfo && context.cityId);
 
   return { name, message, context, valid };
 }
@@ -759,8 +759,8 @@ function updateShareContextPreview() {
   const context = getCurrentShareContext();
   elements.shareCityPreview.textContent = context.city;
   elements.shareWeatherPreview.textContent = context.weather;
-  elements.shareTrackPreview.textContent = context.track?.title || "曲を取得してください";
-  elements.shareArtistPreview.textContent = context.track?.artist || "--";
+  elements.shareTrackPreview.textContent = context.track?.title || "曲なしで投稿できます";
+  elements.shareArtistPreview.textContent = context.track?.artist || "OPTIONAL";
   updateShareFormState();
 }
 
@@ -776,12 +776,12 @@ function updateShareFormState() {
 
   if (!validation.name || !validation.message) {
     elements.shareFormStatus.textContent = "名前とひとことを入力してください。";
-  } else if (!validation.context.track) {
-    elements.shareFormStatus.textContent = "Spotifyで再生中の曲を取得してください。";
   } else if (!lastWeatherInfo) {
     elements.shareFormStatus.textContent = "天気情報の取得を待っています。";
   } else {
-    elements.shareFormStatus.textContent = "入力内容を確認できます。";
+    elements.shareFormStatus.textContent = validation.context.track
+      ? "曲と一緒に投稿内容を確認できます。"
+      : "曲なしで投稿内容を確認できます。";
     elements.shareFormStatus.classList.add("is-ready");
   }
 }
@@ -835,7 +835,11 @@ function createCloudTimelineCard(post) {
     image.style.objectFit = "cover";
     article.appendChild(image);
   } else {
-    article.appendChild(createTimelineTextElement("span", "cloud-timeline-avatar is-placeholder", "♪"));
+    article.appendChild(createTimelineTextElement(
+      "span",
+      "cloud-timeline-avatar is-placeholder",
+      post?.track?.title ? "♪" : "☁"
+    ));
   }
 
   const body = document.createElement("div");
@@ -863,26 +867,29 @@ function createCloudTimelineCard(post) {
     createTimelineTextElement("span", "cloud-timeline-city", post?.city || "都市不明")
   );
 
-  const track = document.createElement("div");
-  track.className = "cloud-timeline-track";
-  const spotifyUrl = getSafeTimelineUrl(post?.track?.spotifyUrl, "open.spotify.com");
-  const trackText = `${post?.track?.title || "曲名不明"} / ${post?.track?.artist || "アーティスト不明"}`;
-  const trackTitle = createTimelineTextElement(
-    spotifyUrl ? "a" : "strong",
-    "cloud-timeline-track-title",
-    trackText
-  );
+  let track = null;
+  if (post?.track?.title) {
+    track = document.createElement("div");
+    track.className = "cloud-timeline-track";
+    const spotifyUrl = getSafeTimelineUrl(post.track.spotifyUrl, "open.spotify.com");
+    const trackText = `${post.track.title} / ${post.track.artist || "アーティスト不明"}`;
+    const trackTitle = createTimelineTextElement(
+      spotifyUrl ? "a" : "strong",
+      "cloud-timeline-track-title",
+      trackText
+    );
 
-  if (spotifyUrl && trackTitle instanceof HTMLAnchorElement) {
-    trackTitle.href = spotifyUrl;
-    trackTitle.target = "_blank";
-    trackTitle.rel = "noopener noreferrer";
+    if (spotifyUrl && trackTitle instanceof HTMLAnchorElement) {
+      trackTitle.href = spotifyUrl;
+      trackTitle.target = "_blank";
+      trackTitle.rel = "noopener noreferrer";
+    }
+
+    track.append(
+      createTimelineTextElement("span", "cloud-timeline-now-playing", "NOW PLAYING"),
+      trackTitle
+    );
   }
-
-  track.append(
-    createTimelineTextElement("span", "cloud-timeline-now-playing", "NOW PLAYING"),
-    trackTitle
-  );
 
   const actions = document.createElement("div");
   actions.className = "cloud-timeline-actions";
@@ -899,7 +906,9 @@ function createCloudTimelineCard(post) {
   reportButton.addEventListener("click", () => openReportDialog(post.id, reportButton));
   actions.appendChild(reportButton);
 
-  body.append(header, message, context, track, actions);
+  body.append(header, message, context);
+  if (track) body.appendChild(track);
+  body.appendChild(actions);
   article.appendChild(body);
   return article;
 }
@@ -1273,8 +1282,8 @@ function openShareConfirmDialog() {
   elements.confirmShareMessage.textContent = pendingShareDraft.message;
   elements.confirmShareCity.textContent = pendingShareDraft.city;
   elements.confirmShareWeather.textContent = pendingShareDraft.weather;
-  elements.confirmShareTrack.textContent = pendingShareDraft.track.title;
-  elements.confirmShareArtist.textContent = pendingShareDraft.track.artist || "--";
+  elements.confirmShareTrack.textContent = pendingShareDraft.track?.title || "曲なし";
+  elements.confirmShareArtist.textContent = pendingShareDraft.track?.artist || "投稿には曲を含めません";
 
   lastShareConfirmFocus = document.activeElement;
   elements.shareConfirmLayer.hidden = false;

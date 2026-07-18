@@ -1,6 +1,6 @@
 # WeatherSpot Terminal
 
-WeatherSpotは、都市の天気・窓の景色・Spotifyで再生中の曲を組み合わせた天気ダッシュボードです。現在の曲、天気、都市、名前、30文字までのひとことを公開タイムラインへ共有できます。
+WeatherSpotは、都市の天気・窓の景色・Spotifyで再生中の曲を組み合わせた天気ダッシュボードです。天気、都市、名前、30文字までのひとことを公開タイムラインへ共有でき、再生中の曲がある場合は曲情報も追加できます。
 
 ![WeatherSpot Terminal](assets/readme-preview.png)
 
